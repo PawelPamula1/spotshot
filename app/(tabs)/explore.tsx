@@ -1,34 +1,84 @@
 import { dummySpots } from "@/lib/data/dummySpots";
 import { Image } from "expo-image";
-import { router } from "expo-router";
-import React from "react";
+import { router, Stack } from "expo-router";
+import React, { useState } from "react";
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
+  const [search, setSearch] = useState("");
+  const [filteredSpots, setFilteredSpots] = useState(dummySpots);
+  const [loading, setLoading] = useState(false);
+  const theme = useColorScheme() ?? "light";
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: insets.bottom + 24 },
-        ]}
-      >
-        <Text style={styles.header}>Explore Spots</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.content,
+        { paddingBottom: insets.bottom + 24 },
+      ]}
+    >
+      <Stack.Screen
+        options={{
+          title: "Explore Spots",
+          headerSearchBarOptions: {
+            placeholder: "Search",
+            onChangeText: (e) => {
+              const text = e.nativeEvent.text;
+              setSearch(text);
+              setLoading(true);
 
-        {dummySpots.map((spot) => (
+              // symulacja przetwarzania danych jak w zapytaniu do API
+              setTimeout(() => {
+                const filtered = dummySpots.filter((spot) => {
+                  const query = text.toLowerCase();
+                  return (
+                    spot.name.toLowerCase().includes(query) ||
+                    spot.city.toLowerCase().includes(query) ||
+                    spot.description.toLowerCase().includes(query)
+                  );
+                });
+                setFilteredSpots(filtered);
+                setLoading(false);
+              }, 400); // możesz zmniejszyć lub zwiększyć
+            },
+          },
+        }}
+      />
+      <Text style={{ color: theme === "light" ? "#000" : "#fff" }}>
+        {search && `Search for "${search}"`}
+      </Text>
+      {loading ? (
+        <Text
+          style={{
+            marginTop: 20,
+            textAlign: "center",
+            color: theme === "light" ? "#000" : "#fff",
+          }}
+        >
+          Loading...
+        </Text>
+      ) : filteredSpots.length === 0 ? (
+        <Text
+          style={{
+            marginTop: 20,
+            textAlign: "center",
+            color: theme === "light" ? "#000" : "#fff",
+          }}
+        >
+          No results found
+        </Text>
+      ) : (
+        filteredSpots.map((spot) => (
           <TouchableOpacity
             key={spot.id}
             style={styles.card}
@@ -41,29 +91,20 @@ export default function ExploreScreen() {
               <Text style={styles.desc}>{spot.description}</Text>
             </View>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+        ))
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f4f4f4",
-  },
   container: {
     flex: 1,
   },
   content: {
     padding: 16,
   },
-  header: {
-    fontSize: 32,
-    fontWeight: "700",
-    marginBottom: 16,
-    color: "#222",
-  },
+
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,

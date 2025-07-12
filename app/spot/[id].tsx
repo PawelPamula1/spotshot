@@ -1,5 +1,5 @@
 import { dummySpots } from "@/lib/data/dummySpots";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import {
   Image,
   ScrollView,
@@ -16,6 +16,7 @@ export default function SpotDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      <Stack.Screen options={{ title: spot?.name }} />
       <Image source={spot.image} style={styles.image} />
       <Text style={styles.title}>{spot.name}</Text>
       <Text style={styles.city}>{spot.city}</Text>
