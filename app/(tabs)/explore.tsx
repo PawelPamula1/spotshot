@@ -36,8 +36,6 @@ export default function ExploreScreen() {
               const text = e.nativeEvent.text;
               setSearch(text);
               setLoading(true);
-
-              // symulacja przetwarzania danych jak w zapytaniu do API
               setTimeout(() => {
                 const filtered = dummySpots.filter((spot) => {
                   const query = text.toLowerCase();
@@ -49,7 +47,7 @@ export default function ExploreScreen() {
                 });
                 setFilteredSpots(filtered);
                 setLoading(false);
-              }, 400); // możesz zmniejszyć lub zwiększyć
+              }, 400);
             },
           },
         }}
