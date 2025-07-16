@@ -3,6 +3,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +20,13 @@ export default function SpotDetailScreen() {
 
   const handleToggleSaved = () => {
     setIsSaved((prev) => !prev);
+  };
+
+  const handleOpenGoogleMaps = () => {
+    const destination = `${spot.latitude},${spot.longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
+
+    Linking.openURL(url);
   };
 
   return (
@@ -42,6 +50,10 @@ export default function SpotDetailScreen() {
         style={styles.mapButton}
       >
         <Text style={styles.mapButtonText}>📍 Pokaż na mapie</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleOpenGoogleMaps} style={styles.navButton}>
+        <Text style={styles.navButtonText}>🧭 Jak tam dojechać</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleToggleSaved} style={styles.saveButton}>
@@ -86,6 +98,19 @@ const styles = StyleSheet.create({
     color: "#444",
     marginBottom: 24,
     lineHeight: 22,
+  },
+  navButton: {
+    backgroundColor: "#34A853",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignSelf: "flex-start",
+    marginBottom: 16,
+  },
+  navButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
   },
   mapButton: {
     backgroundColor: "#007AFF",
