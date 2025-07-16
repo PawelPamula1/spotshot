@@ -1,27 +1,20 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Image } from "expo-image";
 
 export default function Saved() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
+    <ThemedView>
+      <ThemedText>My favourite spots</ThemedText>
+      <View>
+        <Image
+          source={require("@/assets/images/hero-desktop.png")}
+          style={styles.image}
         />
-      }
-    >
-      <ThemedView>
-        <ThemedText>Kutasiando Add Spot</ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    </ThemedView>
   );
 }
 
@@ -35,5 +28,10 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+  },
+  image: {
+    width: "100%",
+    height: 400,
+    borderRadius: 6,
   },
 });

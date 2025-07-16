@@ -29,13 +29,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
+          title: "Explore Spots",
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="search" size={24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="addSpot"
+        name="addspot"
         options={{
           title: "Add Spot",
           tabBarIcon: ({ color }) => (
