@@ -1,5 +1,6 @@
 import { dummySpots } from "@/lib/data/dummySpots";
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import {
   Image,
   ScrollView,
@@ -12,7 +13,13 @@ export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams();
   const spot = dummySpots.find((s) => s.id === id);
 
+  const [isSaved, setIsSaved] = useState(false);
+
   if (!spot) return <Text>Spot not found</Text>;
+
+  const handleToggleSaved = () => {
+    setIsSaved((prev) => !prev);
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -22,7 +29,6 @@ export default function SpotDetailScreen() {
       <Text style={styles.city}>{spot.city}</Text>
       <Text style={styles.desc}>{spot.description}</Text>
 
-      {/* ⬅️ Dodano przycisk do mapy */}
       <TouchableOpacity
         onPress={() =>
           router.push({
@@ -38,13 +44,16 @@ export default function SpotDetailScreen() {
         <Text style={styles.mapButtonText}>📍 Pokaż na mapie</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={handleToggleSaved} style={styles.saveButton}>
+        <Text style={styles.saveButtonText}>
+          {isSaved ? "✅ Dodano do ulubionych" : "❤️ Dodaj do ulubionych"}
+        </Text>
+      </TouchableOpacity>
+
       <Text style={styles.instructions}>📸 Jak zrobić dobre zdjęcie:</Text>
       <Text>- Stań przy barierce z lewej strony mostu</Text>
       <Text>- Użyj obiektywu 50mm</Text>
       <Text>- Najlepiej o złotej godzinie (18:30)</Text>
-
-      <Text style={styles.galleryTitle}>Zdjęcia zrobione w tym miejscu:</Text>
-      {/* Tu np. 3-4 małe zdjęcia (z Instagramu lub lokalne) */}
     </ScrollView>
   );
 }
@@ -78,6 +87,32 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     lineHeight: 22,
   },
+  mapButton: {
+    backgroundColor: "#007AFF",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignSelf: "flex-start",
+    marginBottom: 16,
+  },
+  mapButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  saveButton: {
+    backgroundColor: "#FFD700",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignSelf: "flex-start",
+    marginBottom: 24,
+  },
+  saveButtonText: {
+    color: "#222",
+    fontWeight: "600",
+    fontSize: 14,
+  },
   instructions: {
     fontSize: 16,
     fontWeight: "600",
@@ -91,24 +126,4 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#333",
   },
-  mapButton: {
-    backgroundColor: "#007AFF",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignSelf: "flex-start",
-    marginBottom: 24,
-  },
-  mapButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
-  },
 });
-
-export const options = ({ params }: { params: { id: string } }) => {
-  const spot = dummySpots.find((s) => s.id === params.id);
-  return {
-    title: `📸 ${spot?.name}` ?? "Szczegóły",
-  };
-};
