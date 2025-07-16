@@ -1,31 +1,48 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import * as Location from "expo-location";
+import { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 
 export default function PickLocationScreen() {
-  const params = useLocalSearchParams();
-
-  const latitude = Array.isArray(params.latitude)
-    ? parseFloat(params.latitude[0])
-    : parseFloat(params.latitude ?? "48.8566");
-
-  const longitude = Array.isArray(params.longitude)
-    ? parseFloat(params.longitude[0])
-    : parseFloat(params.longitude ?? "2.3522");
-
-  const [region, setRegion] = useState<Region>({
-    latitude,
-    longitude,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
-
   const router = useRouter();
   const mapRef = useRef<MapView>(null);
 
+  const [region, setRegion] = useState<Region | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.warn("Brak dostępu do lokalizacji, używam fallback");
+        setRegion({
+          latitude: 48.8566,
+          longitude: 2.3522,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+        setLoading(false);
+        return;
+      }
+
+      const current = await Location.getCurrentPositionAsync({});
+      setRegion({
+        latitude: current.coords.latitude,
+        longitude: current.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+      setLoading(false);
+    };
+
+    fetchUserLocation();
+  }, []);
+
   const handlePickLocation = () => {
+    if (!region) return;
+
     router.push({
       pathname: "/add-spot/add-spot-form",
       params: {
@@ -34,6 +51,14 @@ export default function PickLocationScreen() {
       },
     });
   };
+
+  if (loading || !region) {
+    return (
+      <View style={styles.centered}>
+        <Text>⏳ Ładowanie lokalizacji...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -61,6 +86,11 @@ export default function PickLocationScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   map: { flex: 1 },
   pin: {
     position: "absolute",
