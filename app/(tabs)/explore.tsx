@@ -1,3 +1,4 @@
+import { Filters } from "@/components/Filters";
 import { dummySpots } from "@/lib/data/dummySpots";
 import { Image } from "expo-image";
 import { router, Stack } from "expo-router";
@@ -17,6 +18,7 @@ export default function ExploreScreen() {
   const [search, setSearch] = useState("");
   const [filteredSpots, setFilteredSpots] = useState(dummySpots);
   const [loading, setLoading] = useState(false);
+
   const theme = useColorScheme() ?? "light";
 
   return (
@@ -52,6 +54,8 @@ export default function ExploreScreen() {
           },
         }}
       />
+      <Filters onFilter={(filtered) => setFilteredSpots(filtered)} />
+
       <Text style={{ color: theme === "light" ? "#000" : "#fff" }}>
         {search && `Search for "${search}"`}
       </Text>
@@ -98,41 +102,46 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#121212", // ciemne tło
   },
   content: {
     padding: 16,
   },
 
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
+    backgroundColor: "#1E1E1E", // ciemna karta
+    borderRadius: 16,
     overflow: "hidden",
     marginBottom: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#2E2E2E",
   },
   image: {
     width: "100%",
     height: 180,
   },
   textContainer: {
-    padding: 12,
+    padding: 14,
   },
   name: {
     fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 2,
+    fontWeight: "700",
+    marginBottom: 4,
+    color: "#fff",
   },
   city: {
     fontSize: 14,
-    color: "#888",
+    color: "#bbb",
     marginBottom: 6,
   },
   desc: {
     fontSize: 13,
-    color: "#444",
+    color: "#ccc",
+    lineHeight: 18,
   },
 });

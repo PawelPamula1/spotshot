@@ -41,25 +41,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: "#0D0D0D",
   },
   heading: {
     fontSize: 22,
     fontWeight: "700",
     marginBottom: 16,
+    color: "#fff",
   },
   list: {
     paddingBottom: 32,
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#1A1A1A",
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#2E2E2E",
   },
   image: {
     width: "100%",
@@ -71,10 +75,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 17,
     fontWeight: "600",
+    color: "#fff",
     marginBottom: 4,
   },
   city: {
     fontSize: 14,
-    color: "#777",
+    color: "#aaa",
   },
 });

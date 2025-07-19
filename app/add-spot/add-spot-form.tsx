@@ -1,5 +1,5 @@
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -52,6 +52,9 @@ export default function AddSpotForm() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.inner}>
+      <Stack.Screen
+        options={{ title: "Add Spot Form", headerBackTitle: "Cancel" }}
+      />
       {location && (
         <View style={styles.mapContainer}>
           <MapView
@@ -114,17 +117,23 @@ export default function AddSpotForm() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fafafa" },
+  container: { flex: 1, backgroundColor: "#0D0D0D" },
   inner: { padding: 20 },
-  label: { fontWeight: "600", fontSize: 16, marginBottom: 6 },
+  label: {
+    fontWeight: "600",
+    fontSize: 16,
+    marginBottom: 6,
+    color: "#fff",
+  },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: "#1A1A1A",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 15,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#333",
+    color: "#fff",
     marginBottom: 20,
   },
   mapContainer: {
@@ -134,7 +143,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imageButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#2563EB",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
@@ -146,10 +155,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#10B981",
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 10,
   },
   submitButtonText: {
     color: "#fff",

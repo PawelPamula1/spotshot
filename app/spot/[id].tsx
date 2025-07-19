@@ -1,5 +1,5 @@
 import { dummySpots } from "@/lib/data/dummySpots";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function SpotDetailScreen() {
@@ -31,41 +32,71 @@ export default function SpotDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Stack.Screen options={{ title: spot?.name }} />
-      <Image source={spot.image} style={styles.image} />
-      <Text style={styles.title}>{spot.name}</Text>
-      <Text style={styles.city}>{spot.city}</Text>
-      <Text style={styles.desc}>{spot.description}</Text>
+      <Stack.Screen options={{ title: "" }} />
 
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/",
-            params: {
-              latitude: spot.latitude.toString(),
-              longitude: spot.longitude.toString(),
-            },
-          })
-        }
-        style={styles.mapButton}
-      >
-        <Text style={styles.mapButtonText}>📍 Pokaż na mapie</Text>
-      </TouchableOpacity>
+      {/* --- Gradient Header --- */}
+      <Image source={spot.image} style={styles.heroImage} />
 
-      <TouchableOpacity onPress={handleOpenGoogleMaps} style={styles.navButton}>
-        <Text style={styles.navButtonText}>🧭 Jak tam dojechać</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleToggleSaved} style={styles.saveButton}>
-        <Text style={styles.saveButtonText}>
-          {isSaved ? "✅ Dodano do ulubionych" : "❤️ Dodaj do ulubionych"}
+      {/* --- Author --- */}
+      <View style={styles.authorCard}>
+        <Image
+          source={{
+            uri: `https://i.pravatar.cc/150?img=${spot.author.userId}`,
+          }}
+          style={styles.avatar}
+        />
+        <Text style={styles.authorText}>
+          Dodane przez{" "}
+          <Text style={styles.authorName}>{spot.author?.authorName}</Text>
         </Text>
-      </TouchableOpacity>
+      </View>
+      {/* <View style={styles.headerOverlay}>
+        <Text style={styles.spotTitle}>{spot.name}</Text>
+        <Text style={styles.spotLocation}>
+          {spot.city}, {spot.country}
+        </Text>
+      </View> */}
 
-      <Text style={styles.instructions}>📸 Jak zrobić dobre zdjęcie:</Text>
-      <Text>- Stań przy barierce z lewej strony mostu</Text>
-      <Text>- Użyj obiektywu 50mm</Text>
-      <Text>- Najlepiej o złotej godzinie (18:30)</Text>
+      {/* --- Description --- */}
+      <View style={styles.section}>
+        <Text style={styles.description}>{spot.description}</Text>
+      </View>
+
+      {/* --- Buttons --- */}
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity
+          onPress={handleOpenGoogleMaps}
+          style={[styles.button, styles.blueGradient]}
+        >
+          <Text style={styles.buttonText}>📍 Pokaż na mapie</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleOpenGoogleMaps}
+          style={[styles.button, styles.greenGradient]}
+        >
+          <Text style={styles.buttonText}>🧭 Jak tam dojechać</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleToggleSaved}
+          style={[styles.button, styles.redGradient]}
+        >
+          <Text style={styles.buttonText}>
+            {isSaved ? "✅ Dodano do ulubionych" : "❤️ Dodaj do ulubionych"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* --- Tips --- */}
+      <View style={styles.tipsCard}>
+        <Text style={styles.tipsTitle}>📸 Jak zrobić dobre zdjęcie:</Text>
+        <Text style={styles.tip}>
+          • Stań przy barierce z lewej strony mostu
+        </Text>
+        <Text style={styles.tip}>• Użyj obiektywu 50mm</Text>
+        <Text style={styles.tip}>• Najlepiej o złotej godzinie (18:30)</Text>
+      </View>
     </ScrollView>
   );
 }
@@ -73,82 +104,108 @@ export default function SpotDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fefefe",
-    padding: 16,
+    backgroundColor: "#121212",
   },
-  image: {
+  heroImage: {
     width: "100%",
-    height: 220,
-    borderRadius: 12,
-    marginBottom: 16,
+    height: 260,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
-  title: {
-    fontSize: 24,
+  headerOverlay: {
+    position: "absolute",
+    top: 160,
+    left: 16,
+    right: 16,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    padding: 16,
+    borderRadius: 18,
+    backdropFilter: "blur(6px)",
+  },
+  spotTitle: {
+    fontSize: 26,
     fontWeight: "700",
-    color: "#222",
-    marginBottom: 4,
+    color: "#fff",
   },
-  city: {
+  spotLocation: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 12,
+    color: "#ccc",
+    marginTop: 4,
   },
-  desc: {
+  authorCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+    marginHorizontal: 16,
+    padding: 14,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 18,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 12,
+  },
+  authorText: {
+    fontSize: 14,
+    color: "#aaa",
+  },
+  authorName: {
+    fontWeight: "600",
+    color: "#fff",
+  },
+  section: {
+    paddingHorizontal: 16,
+    marginTop: 20,
+  },
+  description: {
     fontSize: 15,
-    color: "#444",
-    marginBottom: 24,
+    color: "#ddd",
     lineHeight: 22,
   },
-  navButton: {
-    backgroundColor: "#34A853",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignSelf: "flex-start",
-    marginBottom: 16,
+  buttonGroup: {
+    marginTop: 28,
+    marginHorizontal: 16,
+    gap: 12,
   },
-  navButtonText: {
+  button: {
+    paddingVertical: 13,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    alignItems: "center",
+  },
+  buttonText: {
     color: "#fff",
     fontWeight: "600",
-    fontSize: 14,
+    fontSize: 15,
   },
-  mapButton: {
-    backgroundColor: "#007AFF",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignSelf: "flex-start",
-    marginBottom: 16,
+  blueGradient: {
+    backgroundColor: "#3B82F6", // vibrant blue
   },
-  mapButtonText: {
+  greenGradient: {
+    backgroundColor: "#10B981", // neon green
+  },
+  redGradient: {
+    backgroundColor: "#EC4899", // neon pink
+  },
+  tipsCard: {
+    marginTop: 36,
+    marginBottom: 64,
+    marginHorizontal: 16,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 18,
+    padding: 18,
+  },
+  tipsTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 10,
     color: "#fff",
-    fontWeight: "600",
+  },
+  tip: {
     fontSize: 14,
-  },
-  saveButton: {
-    backgroundColor: "#FFD700",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignSelf: "flex-start",
-    marginBottom: 24,
-  },
-  saveButtonText: {
-    color: "#222",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  instructions: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
-  },
-  galleryTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 24,
-    marginBottom: 8,
-    color: "#333",
+    color: "#bbb",
+    marginBottom: 6,
   },
 });
