@@ -1,8 +1,14 @@
-import { dummySpots } from "@/lib/data/dummySpots";
+import { getSpots } from "@/lib/api/spots";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import MapView, {
   Callout,
   Marker,
@@ -14,6 +20,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function SpotsScreen() {
   const mapRef = useRef<MapView>(null);
   const { latitude, longitude } = useLocalSearchParams();
+
+  const [spots, setSpots] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchSpots = async () => {
+      try {
+        const data = await getSpots();
+        setSpots(data);
+      } catch (err) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSpots();
+  }, []);
 
   useEffect(() => {
     if (latitude && longitude && mapRef.current) {
@@ -27,6 +51,22 @@ export default function SpotsScreen() {
     }
   }, [latitude, longitude]);
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <Text>Wystąpił błąd podczas ładowania danych.</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <MapView
@@ -35,7 +75,7 @@ export default function SpotsScreen() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation
       >
-        {dummySpots.map((spot) => (
+        {spots.map((spot) => (
           <Marker
             key={spot.id}
             coordinate={{
@@ -47,7 +87,7 @@ export default function SpotsScreen() {
             <Callout tooltip onPress={() => router.push(`/spot/${spot.id}`)}>
               <View style={styles.callout}>
                 <Image
-                  source={spot.image}
+                  source={{ uri: spot.image }}
                   style={styles.image}
                   resizeMode="cover"
                 />
@@ -65,6 +105,11 @@ export default function SpotsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   map: {
     width: Dimensions.get("window").width,

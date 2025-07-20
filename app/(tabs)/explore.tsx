@@ -1,8 +1,9 @@
 import { Filters } from "@/components/Filters";
-import { dummySpots } from "@/lib/data/dummySpots";
+import { getSpots } from "@/lib/api/spots"; // zakładam że tu masz funkcję do pobierania spotów
+import { Spot } from "@/types/spot"; // zakładam, że masz typ Spot
 import { Image } from "expo-image";
 import { router, Stack } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -16,10 +17,40 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
-  const [filteredSpots, setFilteredSpots] = useState(dummySpots);
-  const [loading, setLoading] = useState(false);
+  const [allSpots, setAllSpots] = useState<Spot[]>([]);
+  const [filteredSpots, setFilteredSpots] = useState<Spot[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const theme = useColorScheme() ?? "light";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getSpots();
+        setAllSpots(data);
+        setFilteredSpots(data);
+      } catch (error) {
+        console.error("Failed to fetch spots:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSearch = (text: string) => {
+    setSearch(text);
+    const query = text.toLowerCase();
+    const filtered = allSpots.filter((spot) => {
+      return (
+        spot.name.toLowerCase().includes(query) ||
+        spot.city.toLowerCase().includes(query) ||
+        spot.description.toLowerCase().includes(query)
+      );
+    });
+    setFilteredSpots(filtered);
+  };
 
   return (
     <ScrollView
@@ -34,51 +65,23 @@ export default function ExploreScreen() {
           title: "Explore Spots",
           headerSearchBarOptions: {
             placeholder: "Search",
-            onChangeText: (e) => {
-              const text = e.nativeEvent.text;
-              setSearch(text);
-              setLoading(true);
-              setTimeout(() => {
-                const filtered = dummySpots.filter((spot) => {
-                  const query = text.toLowerCase();
-                  return (
-                    spot.name.toLowerCase().includes(query) ||
-                    spot.city.toLowerCase().includes(query) ||
-                    spot.description.toLowerCase().includes(query)
-                  );
-                });
-                setFilteredSpots(filtered);
-                setLoading(false);
-              }, 400);
-            },
+            onChangeText: (e) => handleSearch(e.nativeEvent.text),
           },
         }}
       />
+
       <Filters onFilter={(filtered) => setFilteredSpots(filtered)} />
 
-      <Text style={{ color: theme === "light" ? "#000" : "#fff" }}>
-        {search && `Search for "${search}"`}
-      </Text>
+      {search ? (
+        <Text style={{ color: theme === "light" ? "#000" : "#fff" }}>
+          Search for "{search}"
+        </Text>
+      ) : null}
+
       {loading ? (
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "center",
-            color: theme === "light" ? "#000" : "#fff",
-          }}
-        >
-          Loading...
-        </Text>
+        <Text style={styles.loading}>Loading...</Text>
       ) : filteredSpots.length === 0 ? (
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "center",
-            color: theme === "light" ? "#000" : "#fff",
-          }}
-        >
-          No results found
-        </Text>
+        <Text style={styles.loading}>No results found</Text>
       ) : (
         filteredSpots.map((spot) => (
           <TouchableOpacity
@@ -86,7 +89,7 @@ export default function ExploreScreen() {
             style={styles.card}
             onPress={() => router.push(`/spot/${spot.id}`)}
           >
-            <Image source={spot.image} style={styles.image} />
+            <Image source={{ uri: spot.image }} style={styles.image} />
             <View style={styles.textContainer}>
               <Text style={styles.name}>{spot.name}</Text>
               <Text style={styles.city}>{spot.city}</Text>
@@ -102,14 +105,18 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212", // ciemne tło
+    backgroundColor: "#121212",
   },
   content: {
     padding: 16,
   },
-
+  loading: {
+    marginTop: 20,
+    textAlign: "center",
+    color: "#ccc",
+  },
   card: {
-    backgroundColor: "#1E1E1E", // ciemna karta
+    backgroundColor: "#1E1E1E",
     borderRadius: 16,
     overflow: "hidden",
     marginBottom: 16,

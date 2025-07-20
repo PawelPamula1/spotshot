@@ -1,8 +1,9 @@
-import { dummySpots } from "@/lib/data/dummySpots";
+import { getSpotById } from "@/lib/api/spots";
+import { Image as ExpoImage } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Image,
+  ActivityIndicator,
   Linking,
   ScrollView,
   StyleSheet,
@@ -12,12 +13,26 @@ import {
 } from "react-native";
 
 export default function SpotDetailScreen() {
-  const { id } = useLocalSearchParams();
-  const spot = dummySpots.find((s) => s.id === id);
-
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const [spot, setSpot] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
-  if (!spot) return <Text>Spot not found</Text>;
+  useEffect(() => {
+    const fetchSpot = async () => {
+      try {
+        const data = await getSpotById(id);
+        setSpot(data);
+      } catch (err) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSpot();
+  }, [id]);
 
   const handleToggleSaved = () => {
     setIsSaved((prev) => !prev);
@@ -26,20 +41,38 @@ export default function SpotDetailScreen() {
   const handleOpenGoogleMaps = () => {
     const destination = `${spot.latitude},${spot.longitude}`;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`;
-
     Linking.openURL(url);
   };
+
+  if (loading) {
+    return <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />;
+  }
+
+  if (error || !spot) {
+    return (
+      <Text style={{ color: "white", padding: 16 }}>Błąd ładowania danych</Text>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <Stack.Screen options={{ title: "" }} />
 
-      {/* --- Gradient Header --- */}
-      <Image source={spot.image} style={styles.heroImage} />
+      <ExpoImage
+        source={{ uri: spot.image }}
+        style={styles.heroImage}
+        contentFit="contain"
+      />
 
-      {/* --- Author --- */}
+      <View style={styles.imageInfo}>
+        <Text style={styles.spotTitle}>{spot.name}</Text>
+        <Text style={styles.spotLocation}>
+          {spot.city}, {spot.country}
+        </Text>
+      </View>
+
       <View style={styles.authorCard}>
-        <Image
+        <ExpoImage
           source={{
             uri: `https://i.pravatar.cc/150?img=${spot.author.userId}`,
           }}
@@ -50,27 +83,12 @@ export default function SpotDetailScreen() {
           <Text style={styles.authorName}>{spot.author?.authorName}</Text>
         </Text>
       </View>
-      {/* <View style={styles.headerOverlay}>
-        <Text style={styles.spotTitle}>{spot.name}</Text>
-        <Text style={styles.spotLocation}>
-          {spot.city}, {spot.country}
-        </Text>
-      </View> */}
 
-      {/* --- Description --- */}
       <View style={styles.section}>
         <Text style={styles.description}>{spot.description}</Text>
       </View>
 
-      {/* --- Buttons --- */}
       <View style={styles.buttonGroup}>
-        <TouchableOpacity
-          onPress={handleOpenGoogleMaps}
-          style={[styles.button, styles.blueGradient]}
-        >
-          <Text style={styles.buttonText}>📍 Pokaż na mapie</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           onPress={handleOpenGoogleMaps}
           style={[styles.button, styles.greenGradient]}
@@ -88,7 +106,6 @@ export default function SpotDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* --- Tips --- */}
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>📸 Jak zrobić dobre zdjęcie:</Text>
         <Text style={styles.tip}>
@@ -108,19 +125,13 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     width: "100%",
-    height: 260,
+    height: 500,
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
   },
-  headerOverlay: {
-    position: "absolute",
-    top: 160,
-    left: 16,
-    right: 16,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    padding: 16,
-    borderRadius: 18,
-    backdropFilter: "blur(6px)",
+  imageInfo: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
   },
   spotTitle: {
     fontSize: 26,
@@ -181,13 +192,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   blueGradient: {
-    backgroundColor: "#3B82F6", // vibrant blue
+    backgroundColor: "#3B82F6",
   },
   greenGradient: {
-    backgroundColor: "#10B981", // neon green
+    backgroundColor: "#10B981",
   },
   redGradient: {
-    backgroundColor: "#EC4899", // neon pink
+    backgroundColor: "#EC4899",
   },
   tipsCard: {
     marginTop: 36,

@@ -1,4 +1,5 @@
-import { dummySpots } from "@/lib/data/dummySpots";
+import { getCities, getCountries, getSpots } from "@/lib/api/spots";
+import { Spot } from "@/types/spot"; // upewnij się, że masz ten typ
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 
 type FiltersProps = {
-  onFilter: (filteredSpots: typeof dummySpots) => void;
+  onFilter: (spots: Spot[]) => void;
 };
 
 export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
@@ -21,39 +22,55 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
   const [showCountryModal, setShowCountryModal] = useState(false);
   const [showCityModal, setShowCityModal] = useState(false);
 
+  const [countries, setCountries] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+
   const [selectedCountry, setSelectedCountry] = useState("All");
   const [selectedCity, setSelectedCity] = useState("All");
 
-  const countries = [
-    "All",
-    ...Array.from(new Set(dummySpots.map((s) => s.country))),
-  ];
-
-  const availableCities =
-    selectedCountry === "All"
-      ? Array.from(new Set(dummySpots.map((s) => s.city)))
-      : Array.from(
-          new Set(
-            dummySpots
-              .filter((s) => s.country === selectedCountry)
-              .map((s) => s.city)
-          )
-        );
-
-  const cities = ["All", ...availableCities];
-
-  const filterSpots = (country: string, city: string) => {
-    const filtered = dummySpots.filter((spot) => {
-      const matchesCountry = country === "All" || spot.country === country;
-      const matchesCity = city === "All" || spot.city === city;
-      return matchesCountry && matchesCity;
-    });
-
-    onFilter(filtered);
-  };
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const countries = await getCountries();
+        setCountries(["All", ...countries]);
+      } catch (error) {
+        console.error("Błąd pobierania krajów:", error);
+      }
+    };
+    fetchCountries();
+  }, []);
 
   useEffect(() => {
-    filterSpots(selectedCountry, selectedCity);
+    const fetchCities = async () => {
+      if (selectedCountry === "All") {
+        setCities([]);
+        return;
+      }
+
+      try {
+        const cities = await getCities(selectedCountry);
+        setCities(["All", ...cities]);
+      } catch (error) {
+        console.error("Błąd pobierania miast:", error);
+      }
+    };
+    fetchCities();
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    const fetchSpots = async () => {
+      try {
+        const filters: { country?: string; city?: string } = {};
+        if (selectedCountry !== "All") filters.country = selectedCountry;
+        if (selectedCity !== "All") filters.city = selectedCity;
+
+        const spots = await getSpots(filters);
+        onFilter(spots);
+      } catch (error) {
+        console.error("Błąd filtrowania:", error);
+      }
+    };
+    fetchSpots();
   }, [selectedCountry, selectedCity]);
 
   const clearFilters = () => {
@@ -63,17 +80,15 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
 
   return (
     <View style={{ marginVertical: 16 }}>
-      {/* Toggle Button */}
       <TouchableOpacity
         style={styles.toggleButton}
         onPress={() => setShowFilters((prev) => !prev)}
       >
         <Text style={styles.toggleButtonText}>
-          🧭 {showFilters ? "Hide Filters" : "Show Filters"}
+          🧭 {showFilters ? "Ukryj filtry" : "Pokaż filtry"}
         </Text>
       </TouchableOpacity>
 
-      {/* Filters Panel */}
       {showFilters && (
         <>
           <View style={styles.buttonsContainer}>
@@ -81,7 +96,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
               style={styles.button}
               onPress={() => setShowCountryModal(true)}
             >
-              <Text style={styles.buttonText}>🌍 Filter by country</Text>
+              <Text style={styles.buttonText}>🌍 Kraj</Text>
               <Text style={{ color: "#aaa", marginTop: 4 }}>
                 {selectedCountry}
               </Text>
@@ -90,8 +105,9 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
             <TouchableOpacity
               style={styles.button}
               onPress={() => setShowCityModal(true)}
+              disabled={selectedCountry === "All"}
             >
-              <Text style={styles.buttonText}>🏙️ Filter by city</Text>
+              <Text style={styles.buttonText}>🏙️ Miasto</Text>
               <Text style={{ color: "#aaa", marginTop: 4 }}>
                 {selectedCity}
               </Text>
@@ -99,7 +115,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
           </View>
 
           <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
-            <Text style={styles.clearButtonText}>🧹 Clear Filters</Text>
+            <Text style={styles.clearButtonText}>🧹 Wyczyść</Text>
           </TouchableOpacity>
         </>
       )}
