@@ -1,8 +1,11 @@
+import { uploadToCloudinary } from "@/utils/cloudinary";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { Dimensions } from "react-native";
+import uuid from "react-native-uuid";
 
 import {
   Alert,
@@ -15,7 +18,6 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { v4 as uuidv4 } from "uuid";
 
 const FormData = global.FormData;
 
@@ -25,10 +27,12 @@ export default function AddSpotForm() {
     longitude: string;
   }>();
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   const [photoDimensions, setPhotoDimensions] = useState<{
     width: number;
     height: number;
@@ -49,16 +53,19 @@ export default function AddSpotForm() {
     if (!result.canceled && result.assets?.length > 0) {
       setPhoto(result.assets[0]);
 
-      RNImage.getSize(photo!.uri, (width, height) => {
-        console.log("height", height);
+      RNImage.getSize(result.assets[0].uri, (width, height) => {
         setPhotoDimensions({ width, height });
       });
     }
-    console.log("calculatedHeight", calculatedHeight);
   };
 
-  const handleAddSpot = async () => {
-    if (!photo || !location) return;
+  const onSubmit = async (data: any) => {
+    if (!photo) {
+      Alert.alert("Błąd", "Dodaj zdjęcie.");
+      return;
+    }
+
+    const { city, country, description, name } = data;
 
     const source = {
       uri: photo.uri,
@@ -66,17 +73,17 @@ export default function AddSpotForm() {
       name: photo.fileName,
     };
 
-    const imageUrl = await cloudinaryUpload(source);
+    const imageUrl = await uploadToCloudinary(source);
 
     const newSpot = {
-      id: uuidv4(),
-      name,
+      id: uuid.v4(),
       city,
       country,
-      image: imageUrl,
       description,
-      latitude: location.latitude,
-      longitude: location.longitude,
+      name,
+      image: imageUrl,
+      latitude: location!.latitude,
+      longitude: location!.longitude,
       author: {
         userId: 7,
         authorName: "Paul Projects",
@@ -86,39 +93,10 @@ export default function AddSpotForm() {
     console.log("Adding spot:", newSpot);
   };
 
-  const cloudinaryUpload = async (photo: any) => {
-    try {
-      const data = new FormData();
-      data.append("file", photo);
-      data.append("upload_preset", "spotshot_gallery");
-      data.append("cloud_name", "dllsxlovi");
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dllsxlovi/upload",
-        {
-          method: "post",
-          body: data,
-        }
-      );
-      const result = await response.json();
-      if (result.secure_url) {
-        return result.secure_url;
-      } else {
-        Alert.alert("Błąd podczas uploadu zdjęcia");
-        return null;
-      }
-    } catch (error) {
-      Alert.alert("Wystąpił błąd podczas przesyłania zdjęcia.");
-      return null;
-    }
-  };
-
   const screenWidth = Dimensions.get("window").width;
-
-  let calculatedHeight = 300; // fallback
-  if (photoDimensions) {
-    const ratio = photoDimensions.height / photoDimensions.width;
-    calculatedHeight = screenWidth * ratio;
-  }
+  const calculatedHeight = photoDimensions
+    ? screenWidth * (photoDimensions.height / photoDimensions.width)
+    : 300;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.inner}>
@@ -161,38 +139,89 @@ export default function AddSpotForm() {
         </View>
       )}
 
+      {/* NAME */}
       <Text style={styles.label}>📍 Nazwa miejsca</Text>
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        placeholder="Nazwa"
-        style={styles.input}
+      <Controller
+        control={control}
+        name="name"
+        rules={{ required: "Podaj nazwę miejsca" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Nazwa"
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
+      {typeof errors.name?.message === "string" && (
+        <Text style={styles.error}>{errors.name.message}</Text>
+      )}
 
+      {/* DESCRIPTION */}
       <Text style={styles.label}>📝 Opis</Text>
-      <TextInput
-        value={description}
-        onChangeText={setDescription}
-        placeholder="Opis"
-        style={[styles.input, { height: 100 }]}
-        multiline
+      <Controller
+        control={control}
+        name="description"
+        rules={{ required: "Podaj opis" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={[styles.input, { height: 100 }]}
+            placeholder="Opis"
+            value={value}
+            onChangeText={onChange}
+            multiline
+          />
+        )}
       />
+      {typeof errors.description?.message === "string" && (
+        <Text style={styles.error}>{errors.description.message}</Text>
+      )}
 
+      {/* COUNTRY */}
       <Text style={styles.label}>🌍 Kraj</Text>
-      <TextInput
-        value={country}
-        onChangeText={setCountry}
-        style={styles.input}
+      <Controller
+        control={control}
+        name="country"
+        rules={{ required: "Podaj kraj" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={styles.input}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
       />
+      {typeof errors.country?.message === "string" && (
+        <Text style={styles.error}>{errors.country.message}</Text>
+      )}
 
+      {/* CITY */}
       <Text style={styles.label}>🏙️ Miasto</Text>
-      <TextInput value={city} onChangeText={setCity} style={styles.input} />
+      <Controller
+        control={control}
+        name="city"
+        rules={{ required: "Podaj miasto" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={styles.input}
+            value={value}
+            onChangeText={onChange}
+          />
+        )}
+      />
+      {typeof errors.city?.message === "string" && (
+        <Text style={styles.error}>{errors.city.message}</Text>
+      )}
 
       <TouchableOpacity style={styles.imageButton} onPress={handlePickImage}>
         <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleAddSpot}>
+      <TouchableOpacity
+        style={styles.submitButton}
+        onPress={handleSubmit(onSubmit)}
+      >
         <Text style={styles.submitButtonText}>➕ Add Spot</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -207,6 +236,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 6,
     color: "#fff",
+  },
+  error: {
+    color: "#f87171",
+    marginBottom: 10,
+    fontSize: 13,
   },
   input: {
     backgroundColor: "#1A1A1A",
