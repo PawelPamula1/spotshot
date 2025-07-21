@@ -72,7 +72,7 @@ export default function PickLocationScreen() {
 
       <MaterialIcons
         name="location-on"
-        size={32}
+        size={48}
         color="red"
         style={styles.pin}
       />

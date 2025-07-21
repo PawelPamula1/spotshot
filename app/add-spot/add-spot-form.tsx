@@ -1,8 +1,12 @@
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { Dimensions } from "react-native";
+
 import {
-  Image,
+  Alert,
+  Image as RNImage,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +15,9 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { v4 as uuidv4 } from "uuid";
+
+const FormData = global.FormData;
 
 export default function AddSpotForm() {
   const { latitude, longitude } = useLocalSearchParams<{
@@ -20,7 +27,13 @@ export default function AddSpotForm() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [photoDimensions, setPhotoDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const location =
     latitude && longitude
@@ -31,30 +44,101 @@ export default function AddSpotForm() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.5,
-      allowsEditing: true,
     });
 
     if (!result.canceled && result.assets?.length > 0) {
-      setImageUri(result.assets[0].uri);
+      setPhoto(result.assets[0]);
+
+      RNImage.getSize(photo!.uri, (width, height) => {
+        console.log("height", height);
+        setPhotoDimensions({ width, height });
+      });
     }
+    console.log("calculatedHeight", calculatedHeight);
   };
 
-  const handleAddSpot = () => {
+  const handleAddSpot = async () => {
+    if (!photo || !location) return;
+
+    const source = {
+      uri: photo.uri,
+      type: photo.mimeType,
+      name: photo.fileName,
+    };
+
+    const imageUrl = await cloudinaryUpload(source);
+
     const newSpot = {
+      id: uuidv4(),
       name,
+      city,
+      country,
+      image: imageUrl,
       description,
-      location,
-      image: imageUri,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      author: {
+        userId: 7,
+        authorName: "Paul Projects",
+      },
     };
 
     console.log("Adding spot:", newSpot);
   };
+
+  const cloudinaryUpload = async (photo: any) => {
+    try {
+      const data = new FormData();
+      data.append("file", photo);
+      data.append("upload_preset", "spotshot_gallery");
+      data.append("cloud_name", "dllsxlovi");
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dllsxlovi/upload",
+        {
+          method: "post",
+          body: data,
+        }
+      );
+      const result = await response.json();
+      if (result.secure_url) {
+        return result.secure_url;
+      } else {
+        Alert.alert("Błąd podczas uploadu zdjęcia");
+        return null;
+      }
+    } catch (error) {
+      Alert.alert("Wystąpił błąd podczas przesyłania zdjęcia.");
+      return null;
+    }
+  };
+
+  const screenWidth = Dimensions.get("window").width;
+
+  let calculatedHeight = 300; // fallback
+  if (photoDimensions) {
+    const ratio = photoDimensions.height / photoDimensions.width;
+    calculatedHeight = screenWidth * ratio;
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.inner}>
       <Stack.Screen
         options={{ title: "Add Spot Form", headerBackTitle: "Cancel" }}
       />
+
+      {photo && (
+        <Image
+          source={{ uri: photo.uri }}
+          contentFit="contain"
+          style={{
+            width: "100%",
+            height: calculatedHeight,
+            borderRadius: 12,
+            marginBottom: 20,
+          }}
+        />
+      )}
+
       {location && (
         <View style={styles.mapContainer}>
           <MapView
@@ -76,6 +160,7 @@ export default function AddSpotForm() {
           </MapView>
         </View>
       )}
+
       <Text style={styles.label}>📍 Nazwa miejsca</Text>
       <TextInput
         value={name}
@@ -93,21 +178,19 @@ export default function AddSpotForm() {
         multiline
       />
 
+      <Text style={styles.label}>🌍 Kraj</Text>
+      <TextInput
+        value={country}
+        onChangeText={setCountry}
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>🏙️ Miasto</Text>
+      <TextInput value={city} onChangeText={setCity} style={styles.input} />
+
       <TouchableOpacity style={styles.imageButton} onPress={handlePickImage}>
         <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
       </TouchableOpacity>
-
-      {imageUri && (
-        <Image
-          source={{ uri: imageUri }}
-          style={{
-            width: "100%",
-            height: 200,
-            borderRadius: 12,
-            marginBottom: 20,
-          }}
-        />
-      )}
 
       <TouchableOpacity style={styles.submitButton} onPress={handleAddSpot}>
         <Text style={styles.submitButtonText}>➕ Add Spot</Text>
