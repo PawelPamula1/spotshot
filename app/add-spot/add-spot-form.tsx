@@ -1,12 +1,13 @@
 import { uploadToCloudinary } from "@/utils/cloudinary";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Dimensions } from "react-native";
 import uuid from "react-native-uuid";
 
+import { createSpot } from "@/lib/api/spots";
 import {
   Alert,
   Image as RNImage,
@@ -60,37 +61,50 @@ export default function AddSpotForm() {
   };
 
   const onSubmit = async (data: any) => {
-    if (!photo) {
-      Alert.alert("Błąd", "Dodaj zdjęcie.");
-      return;
+    try {
+      if (!photo) {
+        Alert.alert("Błąd", "Dodaj zdjęcie.");
+        return;
+      }
+
+      if (!location) {
+        Alert.alert("Błąd", "Nie określono lokalizacji.");
+        return;
+      }
+
+      const { city, country, description, name } = data;
+
+      const source = {
+        uri: photo.uri,
+        type: photo.mimeType,
+        name: photo.fileName || `photo-${Date.now()}.jpg`,
+      };
+
+      const imageUrl = await uploadToCloudinary(source);
+
+      const newSpot = {
+        id: uuid.v4() as string,
+        city,
+        country,
+        description,
+        name,
+        image: imageUrl,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        author_id: "32",
+      };
+
+      const savedSpot = await createSpot(newSpot);
+
+      Alert.alert("Sukces", "Lokalizacja została dodana!");
+
+      router.push("/explore");
+
+      setPhoto(null);
+    } catch (error: any) {
+      console.error("Błąd przy dodawaniu spotu:", error);
+      Alert.alert("Błąd", "Coś poszło nie tak. Spróbuj ponownie.");
     }
-
-    const { city, country, description, name } = data;
-
-    const source = {
-      uri: photo.uri,
-      type: photo.mimeType,
-      name: photo.fileName,
-    };
-
-    const imageUrl = await uploadToCloudinary(source);
-
-    const newSpot = {
-      id: uuid.v4(),
-      city,
-      country,
-      description,
-      name,
-      image: imageUrl,
-      latitude: location!.latitude,
-      longitude: location!.longitude,
-      author: {
-        userId: 7,
-        authorName: "Paul Projects",
-      },
-    };
-
-    console.log("Adding spot:", newSpot);
   };
 
   const screenWidth = Dimensions.get("window").width;

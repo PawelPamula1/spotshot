@@ -74,13 +74,12 @@ export default function SpotDetailScreen() {
       <View style={styles.authorCard}>
         <ExpoImage
           source={{
-            uri: `https://i.pravatar.cc/150?img=${spot.author.userId}`,
+            uri: `https://i.pravatar.cc/150?img=${spot.author_id}`,
           }}
           style={styles.avatar}
         />
         <Text style={styles.authorText}>
-          Dodane przez{" "}
-          <Text style={styles.authorName}>{spot.author?.authorName}</Text>
+          Dodane przez <Text style={styles.authorName}>{spot.author_id}</Text>
         </Text>
       </View>
 
