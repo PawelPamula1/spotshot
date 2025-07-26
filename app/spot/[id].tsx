@@ -4,6 +4,8 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Dimensions,
+  Image as RNImage,
   Linking,
   ScrollView,
   StyleSheet,
@@ -18,12 +20,19 @@ export default function SpotDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [photoDimensions, setPhotoDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchSpot = async () => {
       try {
         const data = await getSpotById(id);
         setSpot(data);
+        RNImage.getSize(data.image, (width, height) => {
+          setPhotoDimensions({ width, height });
+        });
       } catch (err) {
         setError(true);
       } finally {
@@ -37,6 +46,11 @@ export default function SpotDetailScreen() {
   const handleToggleSaved = () => {
     setIsSaved((prev) => !prev);
   };
+
+  const screenWidth = Dimensions.get("window").width;
+  const calculatedHeight = photoDimensions
+    ? screenWidth * (photoDimensions.height / photoDimensions.width)
+    : 300;
 
   const handleOpenGoogleMaps = () => {
     const destination = `${spot.latitude},${spot.longitude}`;
@@ -60,7 +74,10 @@ export default function SpotDetailScreen() {
 
       <ExpoImage
         source={{ uri: spot.image }}
-        style={styles.heroImage}
+        style={[
+          styles.heroImage,
+          { height: calculatedHeight }, // nadpisujemy wysokość
+        ]}
         contentFit="contain"
       />
 
