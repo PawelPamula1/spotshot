@@ -1,6 +1,8 @@
 import { getSpotById } from "@/lib/api/spots";
+import Entypo from "@expo/vector-icons/Entypo";
 import { Image as ExpoImage } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
+
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -87,11 +89,13 @@ export default function SpotDetailScreen() {
           {spot.city}, {spot.country}
         </Text>
       </View>
-
+      <View style={styles.section}>
+        <Text style={styles.description}>{spot.description}</Text>
+      </View>
       <View style={styles.authorCard}>
         <ExpoImage
           source={{
-            uri: `https://i.pravatar.cc/150?img=${spot.author_id}`,
+            uri: `https://i.pravatar.cc/150?img=${3}`,
           }}
           style={styles.avatar}
         />
@@ -100,31 +104,34 @@ export default function SpotDetailScreen() {
         </Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.description}>{spot.description}</Text>
-      </View>
-
-      <View style={styles.buttonGroup}>
-        <TouchableOpacity
-          onPress={handleOpenGoogleMaps}
-          style={[styles.button, styles.greenGradient]}
-        >
-          <Text style={styles.buttonText}>🧭 Jak tam dojechać</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleToggleSaved}
-          style={[styles.button, styles.redGradient]}
-        >
-          <Text style={styles.buttonText}>
-            {isSaved ? "✅ Dodano do ulubionych" : "❤️ Dodaj do ulubionych"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>📸 Wskazówki:</Text>
         <Text style={styles.tip}>{spot.photo_tips}</Text>
+      </View>
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity onPress={handleOpenGoogleMaps} style={styles.button}>
+          <Text style={styles.buttonText}>Jak tam dojechać </Text>
+          <Text>
+            <Entypo
+              name="direction"
+              size={24}
+              color="white"
+              style={{ marginLeft: 6 }}
+            />
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleToggleSaved} style={styles.button}>
+          <Text style={styles.buttonText}>
+            {isSaved ? "Added to Favorites" : "Add to Favorites"}
+          </Text>
+          <Entypo
+            name={isSaved ? "heart" : "heart-outlined"}
+            size={20}
+            color="white"
+            style={{ marginLeft: 6 }}
+          />
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -189,32 +196,32 @@ const styles = StyleSheet.create({
   },
   buttonGroup: {
     marginTop: 28,
+    marginBottom: 38,
     marginHorizontal: 16,
     gap: 12,
   },
   button: {
     paddingVertical: 13,
     paddingHorizontal: 18,
-    borderRadius: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#3c3b3b",
+    backgroundColor: "#1E1E1E",
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "600",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     fontSize: 15,
-  },
-  blueGradient: {
-    backgroundColor: "#3B82F6",
-  },
-  greenGradient: {
-    backgroundColor: "#10B981",
-  },
-  redGradient: {
-    backgroundColor: "#EC4899",
   },
   tipsCard: {
     marginTop: 36,
-    marginBottom: 64,
+    marginBottom: 36,
     marginHorizontal: 16,
     backgroundColor: "#1E1E1E",
     borderRadius: 18,
