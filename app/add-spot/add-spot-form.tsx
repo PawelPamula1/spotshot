@@ -1,15 +1,13 @@
+import { createSpot } from "@/lib/api/spots";
 import { uploadToCloudinary } from "@/utils/cloudinary";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Dimensions } from "react-native";
-import uuid from "react-native-uuid";
-
-import { createSpot } from "@/lib/api/spots";
 import {
   Alert,
+  Dimensions,
   Image as RNImage,
   ScrollView,
   StyleSheet,
@@ -19,8 +17,7 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-
-const FormData = global.FormData;
+import uuid from "react-native-uuid";
 
 export default function AddSpotForm() {
   const { latitude, longitude } = useLocalSearchParams<{

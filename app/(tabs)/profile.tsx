@@ -1,4 +1,5 @@
 import { dummySpots } from "@/lib/data/dummySpots";
+import { useAuth } from "@/provider/AuthProvider";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import {
@@ -10,6 +11,7 @@ import {
 } from "react-native";
 
 export default function Profile() {
+  const { signOut } = useAuth();
   return (
     <ScrollView style={styles.container}>
       <View style={styles.inner}>
@@ -62,7 +64,10 @@ export default function Profile() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>⚙️ Ustawienia</Text>
 
-          <TouchableOpacity style={styles.settingItem}>
+          <TouchableOpacity
+            onPress={() => signOut()}
+            style={styles.settingItem}
+          >
             <Text style={styles.settingText}>🚪 Wyloguj się</Text>
           </TouchableOpacity>
 
