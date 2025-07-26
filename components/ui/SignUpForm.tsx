@@ -1,24 +1,22 @@
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/provider/AuthProvider";
 import React, { useState } from "react";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 
 export default function SignUpForm() {
+  const { signUp } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { error } = await signUp(email, password);
     setLoading(false);
 
     if (error) {
-      Alert.alert("Sign Up Failed", error.message);
+      Alert.alert("Sign Up Failed", error);
     } else {
-      Alert.alert("Success", "Check your email to confirm your account");
+      Alert.alert("Success", "Account created and you're logged in!");
     }
   };
 

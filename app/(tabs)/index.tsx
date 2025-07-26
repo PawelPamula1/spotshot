@@ -1,4 +1,5 @@
 import { getSpots } from "@/lib/api/spots";
+import { useAuth } from "@/provider/AuthProvider";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -24,6 +25,8 @@ export default function SpotsScreen() {
   const [spots, setSpots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchSpots = async () => {
@@ -84,7 +87,14 @@ export default function SpotsScreen() {
             }}
             title={spot.name}
           >
-            <Callout tooltip onPress={() => router.push(`/spot/${spot.id}`)}>
+            <Callout
+              tooltip
+              onPress={() =>
+                isAuthenticated
+                  ? router.push(`/spot/${spot.id}`)
+                  : router.push("/login")
+              }
+            >
               <View style={styles.callout}>
                 <Image
                   source={{ uri: spot.image }}

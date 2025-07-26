@@ -1,6 +1,6 @@
 import { useAuth } from "@/provider/AuthProvider";
 import React, { useState } from "react";
-import { Button, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 
 export default function SignInForm() {
   const { signIn } = useAuth();
@@ -10,12 +10,12 @@ export default function SignInForm() {
 
   const handleSignIn = async () => {
     setLoading(true);
-    signIn();
+    const { error } = await signIn(email, password);
     setLoading(false);
 
-    // if (error) {
-    //   Alert.alert("Login Failed", error);
-    // }
+    if (error) {
+      Alert.alert("Login Failed", error);
+    }
   };
 
   return (

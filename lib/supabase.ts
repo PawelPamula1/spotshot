@@ -4,7 +4,8 @@ import { AppState } from "react-native";
 import "react-native-url-polyfill/auto";
 
 const supabaseUrl = process.env.EXPO_PUBLIC_NATIVE_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_NATIVE_SUPABASE_ANON_KEY;
+const supabaseAnonKey =
+  process.env.EXPO_PUBLIC_NATIVE_SUPABASE_SERVICE_ROLE_KEY;
 
 export const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
   auth: {

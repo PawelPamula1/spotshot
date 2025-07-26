@@ -1,62 +1,85 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { supabase } from "@/lib/supabase";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-// typy contextu
 type AuthContextType = {
   isAuthenticated: boolean;
-  signIn: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
 
-// domyślny context
 const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
-  signIn: async () => {},
+  signIn: async () => ({ error: undefined }),
+  signUp: async () => ({ error: undefined }),
   signOut: async () => {},
   loading: true,
 });
 
-// hook do używania w komponentach
 export const useAuth = () => useContext(AuthContext);
 
-// provider
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const TOKEN_KEY = "auth_token";
-
   useEffect(() => {
-    const checkToken = async () => {
-      try {
-        const token = await AsyncStorage.getItem(TOKEN_KEY);
-        if (token) {
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        console.error("Failed to load token", error);
-      } finally {
-        setLoading(false);
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setIsAuthenticated(true);
       }
+      setLoading(false);
     };
 
-    checkToken();
+    checkSession();
   }, []);
 
-  const signIn = async () => {
-    // symulacja logowania – zapisz "fake_token"
-    await AsyncStorage.setItem(TOKEN_KEY, "fake_token");
-    setIsAuthenticated(true);
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error || !data.session) {
+        return { error: error?.message || "Authentication failed" };
+      }
+
+      setIsAuthenticated(true);
+      return { error: undefined };
+    } catch (err: any) {
+      return { error: err.message || "Unknown error" };
+    }
+  };
+
+  const signUp = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error || !data.session) {
+        return { error: error?.message || "Registration failed" };
+      }
+
+      setIsAuthenticated(true);
+      return { error: undefined };
+    } catch (err: any) {
+      return { error: err.message || "Unknown error" };
+    }
   };
 
   const signOut = async () => {
-    await AsyncStorage.removeItem(TOKEN_KEY);
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, loading }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, signIn, signUp, signOut, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
