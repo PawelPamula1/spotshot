@@ -7,8 +7,5 @@ export interface Spot {
   description: string;
   latitude: number;
   longitude: number;
-  author: {
-    userId: number;
-    authorName: string;
-  };
+  author_id: string;
 }
