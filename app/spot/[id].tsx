@@ -123,12 +123,8 @@ export default function SpotDetailScreen() {
       </View>
 
       <View style={styles.tipsCard}>
-        <Text style={styles.tipsTitle}>📸 Jak zrobić dobre zdjęcie:</Text>
-        <Text style={styles.tip}>
-          • Stań przy barierce z lewej strony mostu
-        </Text>
-        <Text style={styles.tip}>• Użyj obiektywu 50mm</Text>
-        <Text style={styles.tip}>• Najlepiej o złotej godzinie (18:30)</Text>
+        <Text style={styles.tipsTitle}>📸 Wskazówki:</Text>
+        <Text style={styles.tip}>{spot.photo_tips}</Text>
       </View>
     </ScrollView>
   );

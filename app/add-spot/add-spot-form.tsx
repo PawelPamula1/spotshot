@@ -72,7 +72,7 @@ export default function AddSpotForm() {
         return;
       }
 
-      const { city, country, description, name } = data;
+      const { city, country, description, name, photo_tips } = data;
 
       const source = {
         uri: photo.uri,
@@ -88,6 +88,7 @@ export default function AddSpotForm() {
         country,
         description,
         name,
+        photo_tips,
         image: imageUrl,
         latitude: location.latitude,
         longitude: location.longitude,
@@ -190,6 +191,26 @@ export default function AddSpotForm() {
       />
       {typeof errors.description?.message === "string" && (
         <Text style={styles.error}>{errors.description.message}</Text>
+      )}
+
+      {/* photo_tips */}
+      <Text style={styles.label}>📝 Opis</Text>
+      <Controller
+        control={control}
+        name="photo_tips"
+        rules={{ required: "Podaj opis" }}
+        render={({ field: { onChange, value } }) => (
+          <TextInput
+            style={[styles.input, { height: 100 }]}
+            placeholder="Opis"
+            value={value}
+            onChangeText={onChange}
+            multiline
+          />
+        )}
+      />
+      {typeof errors.photo_tips?.message === "string" && (
+        <Text style={styles.error}>{errors.photo_tips.message}</Text>
       )}
 
       {/* COUNTRY */}
