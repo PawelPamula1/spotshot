@@ -9,11 +9,15 @@ import {
   Alert,
   Dimensions,
   Image as RNImage,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
@@ -111,156 +115,173 @@ export default function AddSpotForm() {
     : 300;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.inner}>
-      <Stack.Screen
-        options={{ title: "Add Spot Form", headerBackTitle: "Cancel" }}
-      />
-
-      {photo && (
-        <Image
-          source={{ uri: photo.uri }}
-          contentFit="contain"
-          style={{
-            width: "100%",
-            height: calculatedHeight,
-            borderRadius: 12,
-            marginBottom: 20,
-          }}
-        />
-      )}
-
-      {location && (
-        <View style={styles.mapContainer}>
-          <MapView
-            style={{ flex: 1 }}
-            initialRegion={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-            provider={PROVIDER_GOOGLE}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            rotateEnabled={false}
-            pitchEnabled={false}
-            pointerEvents="none"
-          >
-            <Marker coordinate={location} />
-          </MapView>
-        </View>
-      )}
-
-      {/* NAME */}
-      <Text style={styles.label}>📍 Nazwa miejsca</Text>
-      <Controller
-        control={control}
-        name="name"
-        rules={{ required: "Podaj nazwę miejsca" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Nazwa"
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      {typeof errors.name?.message === "string" && (
-        <Text style={styles.error}>{errors.name.message}</Text>
-      )}
-
-      {/* DESCRIPTION */}
-      <Text style={styles.label}>📝 Opis</Text>
-      <Controller
-        control={control}
-        name="description"
-        rules={{ required: "Podaj opis" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={[styles.input, { height: 100 }]}
-            placeholder="Opis"
-            value={value}
-            onChangeText={onChange}
-            multiline
-          />
-        )}
-      />
-      {typeof errors.description?.message === "string" && (
-        <Text style={styles.error}>{errors.description.message}</Text>
-      )}
-
-      {/* photo_tips */}
-      <Text style={styles.label}>📝 Opis</Text>
-      <Controller
-        control={control}
-        name="photo_tips"
-        rules={{ required: "Podaj opis" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={[styles.input, { height: 100 }]}
-            placeholder="Opis"
-            value={value}
-            onChangeText={onChange}
-            multiline
-          />
-        )}
-      />
-      {typeof errors.photo_tips?.message === "string" && (
-        <Text style={styles.error}>{errors.photo_tips.message}</Text>
-      )}
-
-      {/* COUNTRY */}
-      <Text style={styles.label}>🌍 Kraj</Text>
-      <Controller
-        control={control}
-        name="country"
-        rules={{ required: "Podaj kraj" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      {typeof errors.country?.message === "string" && (
-        <Text style={styles.error}>{errors.country.message}</Text>
-      )}
-
-      {/* CITY */}
-      <Text style={styles.label}>🏙️ Miasto</Text>
-      <Controller
-        control={control}
-        name="city"
-        rules={{ required: "Podaj miasto" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      {typeof errors.city?.message === "string" && (
-        <Text style={styles.error}>{errors.city.message}</Text>
-      )}
-
-      <TouchableOpacity style={styles.imageButton} onPress={handlePickImage}>
-        <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.submitButton}
-        onPress={handleSubmit(onSubmit)}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.wrapper}
       >
-        <Text style={styles.submitButtonText}>➕ Add Spot</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.inner}
+        >
+          <Stack.Screen
+            options={{ title: "Add Spot Form", headerBackTitle: "Cancel" }}
+          />
+
+          {photo && (
+            <Image
+              source={{ uri: photo.uri }}
+              contentFit="contain"
+              style={{
+                width: "100%",
+                height: calculatedHeight,
+                borderRadius: 12,
+                marginBottom: 20,
+              }}
+            />
+          )}
+
+          {location && (
+            <View style={styles.mapContainer}>
+              <MapView
+                style={{ flex: 1 }}
+                initialRegion={{
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+                provider={PROVIDER_GOOGLE}
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
+                pitchEnabled={false}
+                pointerEvents="none"
+              >
+                <Marker coordinate={location} />
+              </MapView>
+            </View>
+          )}
+
+          {/* NAME */}
+          <Text style={styles.label}>📍 Nazwa miejsca</Text>
+          <Controller
+            control={control}
+            name="name"
+            rules={{ required: "Podaj nazwę miejsca" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={styles.input}
+                placeholder="Nazwa"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          {typeof errors.name?.message === "string" && (
+            <Text style={styles.error}>{errors.name.message}</Text>
+          )}
+
+          {/* DESCRIPTION */}
+          <Text style={styles.label}>📝 Opis</Text>
+          <Controller
+            control={control}
+            name="description"
+            rules={{ required: "Podaj opis" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={[styles.input, { height: 100 }]}
+                placeholder="Opis"
+                value={value}
+                onChangeText={onChange}
+                multiline
+              />
+            )}
+          />
+          {typeof errors.description?.message === "string" && (
+            <Text style={styles.error}>{errors.description.message}</Text>
+          )}
+
+          {/* photo_tips */}
+          <Text style={styles.label}>📝 Opis</Text>
+          <Controller
+            control={control}
+            name="photo_tips"
+            rules={{ required: "Podaj opis" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={[styles.input, { height: 100 }]}
+                placeholder="Opis"
+                value={value}
+                onChangeText={onChange}
+                multiline
+              />
+            )}
+          />
+          {typeof errors.photo_tips?.message === "string" && (
+            <Text style={styles.error}>{errors.photo_tips.message}</Text>
+          )}
+
+          {/* COUNTRY */}
+          <Text style={styles.label}>🌍 Kraj</Text>
+          <Controller
+            control={control}
+            name="country"
+            rules={{ required: "Podaj kraj" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          {typeof errors.country?.message === "string" && (
+            <Text style={styles.error}>{errors.country.message}</Text>
+          )}
+
+          {/* CITY */}
+          <Text style={styles.label}>🏙️ Miasto</Text>
+          <Controller
+            control={control}
+            name="city"
+            rules={{ required: "Podaj miasto" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          {typeof errors.city?.message === "string" && (
+            <Text style={styles.error}>{errors.city.message}</Text>
+          )}
+
+          <TouchableOpacity
+            style={styles.imageButton}
+            onPress={handlePickImage}
+          >
+            <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text style={styles.submitButtonText}>➕ Add Spot</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: "#121212",
+  },
   container: { flex: 1, backgroundColor: "#0D0D0D" },
   inner: { padding: 20 },
   label: {
