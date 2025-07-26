@@ -1,18 +1,19 @@
 import { Filters } from "@/components/Filters";
-import { getSpots } from "@/lib/api/spots"; // zakładam że tu masz funkcję do pobierania spotów
-import { Spot } from "@/types/spot"; // zakładam, że masz typ Spot
-import { Image } from "expo-image";
-import { router, Stack } from "expo-router";
+import { SpotGrid } from "@/components/ui/SpotGrid";
+import { getSpots } from "@/lib/api/spots";
+import { Spot } from "@/types/spot";
+import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ScrollView,
+  ActivityIndicator,
   StyleSheet,
   Text,
-  TouchableOpacity,
   useColorScheme,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const CARD_MARGIN = 8;
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
@@ -53,13 +54,7 @@ export default function ExploreScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.content,
-        { paddingBottom: insets.bottom + 24 },
-      ]}
-    >
+    <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
       <Stack.Screen
         options={{
           title: "Explore Spots",
@@ -69,36 +64,28 @@ export default function ExploreScreen() {
           },
         }}
       />
-
       <Filters onFilter={(filtered) => setFilteredSpots(filtered)} />
-
       {search ? (
-        <Text style={{ color: theme === "light" ? "#000" : "#fff" }}>
+        <Text
+          style={[
+            styles.searchLabel,
+            { color: theme === "light" ? "#000" : "#fff" },
+          ]}
+        >
           Search for "{search}"
         </Text>
       ) : null}
 
       {loading ? (
-        <Text style={styles.loading}>Loading...</Text>
-      ) : filteredSpots.length === 0 ? (
-        <Text style={styles.loading}>No results found</Text>
+        <ActivityIndicator
+          size="small"
+          color="#ccc"
+          style={{ marginTop: 20 }}
+        />
       ) : (
-        filteredSpots.map((spot) => (
-          <TouchableOpacity
-            key={spot.id}
-            style={styles.card}
-            onPress={() => router.push(`/spot/${spot.id}`)}
-          >
-            <Image source={{ uri: spot.image }} style={styles.image} />
-            <View style={styles.textContainer}>
-              <Text style={styles.name}>{spot.name}</Text>
-              <Text style={styles.city}>{spot.city}</Text>
-              <Text style={styles.desc}>{spot.description}</Text>
-            </View>
-          </TouchableOpacity>
-        ))
+        <SpotGrid spots={filteredSpots} />
       )}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -108,47 +95,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
   },
   content: {
-    padding: 16,
+    paddingVertical: 16,
   },
   loading: {
     marginTop: 20,
     textAlign: "center",
     color: "#ccc",
   },
-  card: {
-    backgroundColor: "#1E1E1E",
-    borderRadius: 16,
-    overflow: "hidden",
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: "#2E2E2E",
-  },
-  image: {
-    width: "100%",
-    height: 180,
-  },
-  textContainer: {
-    padding: 14,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 4,
-    color: "#fff",
-  },
-  city: {
-    fontSize: 14,
-    color: "#bbb",
-    marginBottom: 6,
-  },
-  desc: {
-    fontSize: 13,
-    color: "#ccc",
-    lineHeight: 18,
+  searchLabel: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
   },
 });

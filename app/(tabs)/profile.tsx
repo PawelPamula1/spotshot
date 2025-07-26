@@ -1,4 +1,3 @@
-import { ThemedView } from "@/components/ThemedView";
 import { dummySpots } from "@/lib/data/dummySpots";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -13,7 +12,7 @@ import {
 export default function Profile() {
   return (
     <ScrollView style={styles.container}>
-      <ThemedView style={styles.inner}>
+      <View style={styles.inner}>
         {/* Header */}
         <View style={styles.header}>
           <Image
@@ -75,7 +74,7 @@ export default function Profile() {
             <Text style={styles.settingText}>ℹ️ O aplikacji</Text>
           </TouchableOpacity>
         </View>
-      </ThemedView>
+      </View>
     </ScrollView>
   );
 }
