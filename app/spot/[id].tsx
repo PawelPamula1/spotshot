@@ -1,5 +1,7 @@
+import { addToFavourites } from "@/lib/api/favourites";
 import { getSpotById } from "@/lib/api/spots";
 import { getUserById } from "@/lib/api/users";
+import { useAuth } from "@/provider/AuthProvider";
 import { Profile } from "@/types/profile";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image as ExpoImage } from "expo-image";
@@ -30,6 +32,8 @@ export default function SpotDetailScreen() {
     height: number;
   } | null>(null);
 
+  const { userId } = useAuth();
+
   useEffect(() => {
     const fetchSpot = async () => {
       try {
@@ -53,8 +57,15 @@ export default function SpotDetailScreen() {
     fetchSpot();
   }, [id]);
 
-  const handleToggleSaved = () => {
-    setIsSaved((prev) => !prev);
+  const handleToggleSaved = async () => {
+    if (!userId || !spot?.id || isSaved) return;
+
+    try {
+      await addToFavourites(userId, spot.id);
+      setIsSaved(true);
+    } catch (error) {
+      console.error("Failed to save favorite:", error);
+    }
   };
 
   const screenWidth = Dimensions.get("window").width;

@@ -1,7 +1,8 @@
-import { dummySpots } from "@/lib/data/dummySpots";
+import { getFavouriteSpots } from "@/lib/api/favourites";
 import { useAuth } from "@/provider/AuthProvider";
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -11,7 +12,23 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { signOut, profile } = useAuth();
+  const { signOut, userId, profile } = useAuth();
+  const [favouriteSpots, setFavouriteSpots] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchFavourites = async () => {
+      if (!userId) return;
+
+      try {
+        const spots = await getFavouriteSpots(userId);
+        setFavouriteSpots(spots);
+      } catch (err) {
+        console.error("Error fetching favourites", err);
+      }
+    };
+
+    fetchFavourites();
+  }, [userId]);
 
   return (
     <ScrollView style={styles.container}>
@@ -19,7 +36,7 @@ export default function Profile() {
         {/* Header */}
         <View style={styles.header}>
           <Image
-            source={{ uri: "https://i.pravatar.cc/150?img=7" }}
+            source={{ uri: profile?.avatar_url || "https://i.pravatar.cc/150" }}
             style={styles.avatar}
           />
           <View style={{ flex: 1 }}>
@@ -38,7 +55,7 @@ export default function Profile() {
           </View>
 
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>8</Text>
+            <Text style={styles.statNumber}>{favouriteSpots.length}</Text>
             <Text style={styles.statLabel}>Ulubione</Text>
           </View>
         </View>
@@ -47,7 +64,7 @@ export default function Profile() {
           <Text style={styles.sectionTitle}>💾 Zapisane miejsca</Text>
           <TouchableOpacity onPress={() => router.push("/saved")}>
             <View style={styles.previewRow}>
-              {dummySpots.slice(0, 3).map((spot) => (
+              {favouriteSpots.slice(0, 3).map((spot) => (
                 <Image
                   key={spot.id}
                   source={spot.image}
