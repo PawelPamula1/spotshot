@@ -11,7 +11,8 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { signOut } = useAuth();
+  const { signOut, profile } = useAuth();
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.inner}>
@@ -22,7 +23,7 @@ export default function Profile() {
             style={styles.avatar}
           />
           <View style={{ flex: 1 }}>
-            <Text style={styles.username}>@paulprojects</Text>
+            <Text style={styles.username}>@{profile?.username}</Text>
           </View>
           <TouchableOpacity onPress={() => alert("Edit profile")}>
             <Text style={styles.edit}>Edytuj profil</Text>
