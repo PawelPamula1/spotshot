@@ -1,4 +1,4 @@
-import { addToFavourites } from "@/lib/api/favourites";
+import { addToFavourites, checkIfFavourite } from "@/lib/api/favourites";
 import { getSpotById } from "@/lib/api/spots";
 import { getUserById } from "@/lib/api/users";
 import { useAuth } from "@/provider/AuthProvider";
@@ -39,11 +39,18 @@ export default function SpotDetailScreen() {
       try {
         const data = await getSpotById(id);
         setSpot(data);
+
         const { author_id } = data;
         const authorData = await getUserById(author_id);
         if (authorData) {
           setAuthor(authorData);
         }
+
+        if (userId) {
+          const isFav = await checkIfFavourite(userId, data.id);
+          setIsSaved(isFav);
+        }
+
         RNImage.getSize(data.image, (width, height) => {
           setPhotoDimensions({ width, height });
         });
@@ -55,7 +62,7 @@ export default function SpotDetailScreen() {
     };
 
     fetchSpot();
-  }, [id]);
+  }, [id, userId]);
 
   const handleToggleSaved = async () => {
     if (!userId || !spot?.id || isSaved) return;
