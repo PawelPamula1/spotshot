@@ -5,12 +5,40 @@ import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 export default function SignUpForm() {
   const { signUp } = useAuth();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
+    if (!username || !email || !password) {
+      Alert.alert("Missing fields", "Please fill out all fields.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Invalid email", "Please enter a valid email address.");
+      return;
+    }
+
+    if (username.length < 3) {
+      Alert.alert(
+        "Invalid username",
+        "Username must be at least 3 characters long."
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert(
+        "Weak password",
+        "Password must be at least 6 characters long."
+      );
+      return;
+    }
+
     setLoading(true);
-    const { error } = await signUp(email, password);
+    const { error } = await signUp(email, password, username);
     setLoading(false);
 
     if (error) {
@@ -22,6 +50,14 @@ export default function SignUpForm() {
 
   return (
     <View>
+      <TextInput
+        style={styles.input}
+        placeholder="Your Username"
+        placeholderTextColor="#999"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"

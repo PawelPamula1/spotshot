@@ -4,7 +4,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 type AuthContextType = {
   isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (
+    email: string,
+    password: string,
+    username: string
+  ) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
@@ -53,11 +57,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            username: username,
+          },
+        },
       });
 
       if (error || !data.session) {
