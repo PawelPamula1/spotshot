@@ -1,4 +1,6 @@
 import { getSpotById } from "@/lib/api/spots";
+import { getUserById } from "@/lib/api/users";
+import { Profile } from "@/types/profile";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image as ExpoImage } from "expo-image";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -19,6 +21,7 @@ import {
 export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [spot, setSpot] = useState<any>(null);
+  const [author, setAuthor] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -32,6 +35,11 @@ export default function SpotDetailScreen() {
       try {
         const data = await getSpotById(id);
         setSpot(data);
+        const { author_id } = data;
+        const authorData = await getUserById(author_id);
+        if (authorData) {
+          setAuthor(authorData);
+        }
         RNImage.getSize(data.image, (width, height) => {
           setPhotoDimensions({ width, height });
         });
@@ -92,17 +100,20 @@ export default function SpotDetailScreen() {
       <View style={styles.section}>
         <Text style={styles.description}>{spot.description}</Text>
       </View>
-      <View style={styles.authorCard}>
-        <ExpoImage
-          source={{
-            uri: `https://i.pravatar.cc/150?img=${3}`,
-          }}
-          style={styles.avatar}
-        />
-        <Text style={styles.authorText}>
-          Dodane przez <Text style={styles.authorName}>{spot.author_id}</Text>
-        </Text>
-      </View>
+      {author && (
+        <View style={styles.authorCard}>
+          <ExpoImage
+            source={{
+              uri: author?.avatar_url || "https://i.pravatar.cc/150",
+            }}
+            style={styles.avatar}
+          />
+          <Text style={styles.authorText}>
+            Dodane przez{" "}
+            <Text style={styles.authorName}>{author?.username}</Text>
+          </Text>
+        </View>
+      )}
 
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>📸 Wskazówki:</Text>

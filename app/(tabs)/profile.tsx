@@ -36,10 +36,7 @@ export default function Profile() {
             <Text style={styles.statNumber}>12</Text>
             <Text style={styles.statLabel}>Dodane</Text>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>5</Text>
-            <Text style={styles.statLabel}>Odwiedzone</Text>
-          </View>
+
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>8</Text>
             <Text style={styles.statLabel}>Ulubione</Text>

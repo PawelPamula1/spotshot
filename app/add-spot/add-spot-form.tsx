@@ -1,4 +1,5 @@
 import { createSpot } from "@/lib/api/spots";
+import { useAuth } from "@/provider/AuthProvider";
 import { uploadToCloudinary } from "@/utils/cloudinary";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -28,6 +29,7 @@ export default function AddSpotForm() {
     latitude: string;
     longitude: string;
   }>();
+  const { userId } = useAuth();
 
   const {
     control,
@@ -93,7 +95,7 @@ export default function AddSpotForm() {
         image: imageUrl,
         latitude: location.latitude,
         longitude: location.longitude,
-        author_id: "32",
+        author_id: userId,
       };
 
       const savedSpot = await createSpot(newSpot);
@@ -164,7 +166,7 @@ export default function AddSpotForm() {
           )}
 
           {/* NAME */}
-          <Text style={styles.label}>📍 Nazwa miejsca</Text>
+          <Text style={styles.label}>Nazwa miejsca</Text>
           <Controller
             control={control}
             name="name"
@@ -183,7 +185,7 @@ export default function AddSpotForm() {
           )}
 
           {/* DESCRIPTION */}
-          <Text style={styles.label}>📝 Opis</Text>
+          <Text style={styles.label}>Opis</Text>
           <Controller
             control={control}
             name="description"
@@ -203,7 +205,7 @@ export default function AddSpotForm() {
           )}
 
           {/* photo_tips */}
-          <Text style={styles.label}>📝 Opis</Text>
+          <Text style={styles.label}>Instruction for taking photo</Text>
           <Controller
             control={control}
             name="photo_tips"
@@ -211,7 +213,7 @@ export default function AddSpotForm() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={[styles.input, { height: 100 }]}
-                placeholder="Opis"
+                placeholder="Write your instructions"
                 value={value}
                 onChangeText={onChange}
                 multiline
