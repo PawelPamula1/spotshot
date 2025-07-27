@@ -24,3 +24,10 @@ export const checkIfFavourite = async (userId: string, spotId: string) => {
   );
   return response.data.favorited as boolean;
 };
+
+export const getFavouriteCount = async (spotId: string): Promise<number> => {
+  const response = await axios.get(
+    `${BASE_URL}/api/favourites/count/${spotId}`
+  );
+  return response.data.count;
+};

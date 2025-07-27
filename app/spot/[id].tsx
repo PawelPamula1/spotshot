@@ -1,4 +1,8 @@
-import { addToFavourites, checkIfFavourite } from "@/lib/api/favourites";
+import {
+  addToFavourites,
+  checkIfFavourite,
+  getFavouriteCount,
+} from "@/lib/api/favourites";
 import { getSpotById } from "@/lib/api/spots";
 import { getUserById } from "@/lib/api/users";
 import { useAuth } from "@/provider/AuthProvider";
@@ -23,6 +27,7 @@ import {
 export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [spot, setSpot] = useState<any>(null);
+  const [likesCount, setLikesCount] = useState<number>(0);
   const [author, setAuthor] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -39,6 +44,8 @@ export default function SpotDetailScreen() {
       try {
         const data = await getSpotById(id);
         setSpot(data);
+        const count = await getFavouriteCount(id);
+        setLikesCount(count);
 
         const { author_id } = data;
         const authorData = await getUserById(author_id);
@@ -110,14 +117,23 @@ export default function SpotDetailScreen() {
       />
 
       <View style={styles.imageInfo}>
-        <Text style={styles.spotTitle}>{spot.name}</Text>
+        <View>
+          <Text style={styles.spotTitle}>{spot.name}</Text>
+        </View>
         <Text style={styles.spotLocation}>
           {spot.city}, {spot.country}
         </Text>
+        {!!likesCount && (
+          <View style={styles.likesContainer}>
+            <Entypo name={"heart"} size={20} color="#f95e58" />
+            <Text style={styles.likesCount}>{likesCount}</Text>
+          </View>
+        )}
       </View>
       <View style={styles.section}>
         <Text style={styles.description}>{spot.description}</Text>
       </View>
+
       {author && (
         <View style={styles.authorCard}>
           <ExpoImage
@@ -180,6 +196,18 @@ const styles = StyleSheet.create({
   imageInfo: {
     paddingHorizontal: 16,
     paddingTop: 12,
+  },
+
+  likesContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 3,
+  },
+  likesCount: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 18,
   },
   spotTitle: {
     fontSize: 26,
