@@ -20,11 +20,14 @@ function InitialLayout() {
       <Stack>
         <Stack.Screen
           name="(tabs)"
-          options={{ headerShown: false, title: "Home" }}
+          options={{
+            headerShown: false,
+            title: "Home",
+          }}
         />
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="light" backgroundColor="#121212" />
     </>
   );
 }

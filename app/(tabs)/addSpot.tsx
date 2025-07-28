@@ -1,6 +1,7 @@
+import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
@@ -62,6 +63,16 @@ export default function PickLocationScreen() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerTitle: () => <HeaderLogo title="Pick Location" />,
+          headerBackTitle: "Cancel",
+          headerStyle: {
+            backgroundColor: "#121212",
+          },
+          headerTintColor: "#fff",
+        }}
+      />
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -78,14 +89,14 @@ export default function PickLocationScreen() {
       />
 
       <TouchableOpacity style={styles.button} onPress={handlePickLocation}>
-        <Text style={styles.buttonText}>📍 Wybierz lokalizację</Text>
+        <Text style={styles.buttonText}>Wybierz lokalizację</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, marginTop: 12 },
   centered: {
     flex: 1,
     alignItems: "center",
@@ -100,15 +111,21 @@ const styles = StyleSheet.create({
     marginTop: -32,
     zIndex: 10,
   },
+
   button: {
     position: "absolute",
+    paddingVertical: 13,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    borderWidth: 1,
     bottom: 120,
     left: 20,
     right: 20,
-    backgroundColor: "#007AFF",
-    padding: 16,
-    borderRadius: 12,
+    borderColor: "#b3b1b1",
+    backgroundColor: "#1E1E1E",
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   buttonText: {
     color: "#fff",

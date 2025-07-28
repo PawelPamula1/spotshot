@@ -106,7 +106,15 @@ export default function SpotDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Stack.Screen options={{ title: "" }} />
+      <Stack.Screen
+        options={{
+          headerBackTitle: "Spots",
+          headerStyle: {
+            backgroundColor: "#121212",
+          },
+          headerTintColor: "#fff",
+        }}
+      />
 
       <ExpoImage
         source={{ uri: spot.image }}

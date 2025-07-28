@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
+import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { SpotGrid } from "@/components/ui/SpotGrid";
 import { getFavouriteSpots } from "@/lib/api/favourites";
 import { useAuth } from "@/provider/AuthProvider";
 import { Spot } from "@/types/spot"; // dostosuj ścieżkę
+import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Saved() {
@@ -44,6 +46,15 @@ export default function Saved() {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
+      <Stack.Screen
+        options={{
+          headerTitle: () => <HeaderLogo title="Saved Spots" />,
+          headerStyle: {
+            backgroundColor: "#121212",
+          },
+          headerTintColor: "#fff",
+        }}
+      />
       <SpotGrid spots={savedSpots} />
     </View>
   );

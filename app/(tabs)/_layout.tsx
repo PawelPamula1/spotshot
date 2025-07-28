@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { Platform } from "react-native";
 
+import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useAuth } from "@/provider/AuthProvider";
@@ -19,6 +20,7 @@ export default function TabLayout() {
         headerShown: true,
         tabBarStyle: Platform.select({
           ios: {
+            backgroundColor: "#000",
             position: "absolute",
           },
           default: {},
@@ -48,8 +50,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          headerShown: false,
-          title: "Spots",
+          headerTitle: () => <HeaderLogo title="PhotoSpots" />,
+          headerStyle: {
+            backgroundColor: "#121212",
+          },
+          headerTintColor: "#fff",
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="map" size={24} color={color} />
           ),

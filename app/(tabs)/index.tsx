@@ -71,7 +71,7 @@ export default function SpotsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -108,7 +108,7 @@ export default function SpotsScreen() {
           </Marker>
         ))}
       </MapView>
-    </SafeAreaView>
+    </View>
   );
 }
 

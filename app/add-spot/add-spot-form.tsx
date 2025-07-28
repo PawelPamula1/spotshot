@@ -1,3 +1,4 @@
+import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { createSpot } from "@/lib/api/spots";
 import { useAuth } from "@/provider/AuthProvider";
 import { uploadToCloudinary } from "@/utils/cloudinary";
@@ -127,7 +128,14 @@ export default function AddSpotForm() {
           contentContainerStyle={styles.inner}
         >
           <Stack.Screen
-            options={{ title: "Add Spot Form", headerBackTitle: "Cancel" }}
+            options={{
+              headerTitle: () => <HeaderLogo title="Add Spot" />,
+              headerStyle: {
+                backgroundColor: "#121212",
+              },
+              headerTintColor: "#fff",
+              headerBackTitle: "Cancel",
+            }}
           />
 
           {photo && (
@@ -260,10 +268,7 @@ export default function AddSpotForm() {
             <Text style={styles.error}>{errors.city.message}</Text>
           )}
 
-          <TouchableOpacity
-            style={styles.imageButton}
-            onPress={handlePickImage}
-          >
+          <TouchableOpacity style={styles.button} onPress={handlePickImage}>
             <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
           </TouchableOpacity>
 
@@ -313,6 +318,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 20,
+  },
+  button: {
+    paddingVertical: 13,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#3c3b3b",
+    backgroundColor: "#1E1E1E",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 12,
   },
   imageButton: {
     backgroundColor: "#2563EB",

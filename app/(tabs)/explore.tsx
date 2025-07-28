@@ -1,4 +1,5 @@
 import { Filters } from "@/components/Filters";
+import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { SpotGrid } from "@/components/ui/SpotGrid";
 import { getSpots } from "@/lib/api/spots";
 import { Spot } from "@/types/spot";
@@ -57,7 +58,11 @@ export default function ExploreScreen() {
     <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
       <Stack.Screen
         options={{
-          title: "Explore Spots",
+          headerTitle: () => <HeaderLogo title="Explore Spots" />,
+          headerStyle: {
+            backgroundColor: "#121212",
+          },
+          headerTintColor: "#fff",
           headerSearchBarOptions: {
             placeholder: "Search",
             onChangeText: (e) => handleSearch(e.nativeEvent.text),

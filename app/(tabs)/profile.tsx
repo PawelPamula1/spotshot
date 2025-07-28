@@ -1,8 +1,9 @@
+import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { getFavouriteSpots } from "@/lib/api/favourites";
 import { getUserSpotsCount } from "@/lib/api/spots";
 import { useAuth } from "@/provider/AuthProvider";
 import { Image } from "expo-image";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -37,6 +38,16 @@ export default function Profile() {
 
   return (
     <ScrollView style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerTitle: () => <HeaderLogo title="Add Spot" />,
+          headerStyle: {
+            backgroundColor: "#121212",
+          },
+          headerTintColor: "#fff",
+          headerBackTitle: "Cancel",
+        }}
+      />
       <View style={styles.inner}>
         {/* Header */}
         <View style={styles.header}>
@@ -107,11 +118,11 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0D0D0D",
+    backgroundColor: "#121212",
   },
   inner: {
     padding: 20,
-    backgroundColor: "#0D0D0D",
+    backgroundColor: "#121212",
   },
   header: {
     flexDirection: "row",
