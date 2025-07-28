@@ -1,4 +1,5 @@
 import { getFavouriteSpots } from "@/lib/api/favourites";
+import { getUserSpotsCount } from "@/lib/api/spots";
 import { useAuth } from "@/provider/AuthProvider";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -14,6 +15,7 @@ import {
 export default function Profile() {
   const { signOut, userId, profile } = useAuth();
   const [favouriteSpots, setFavouriteSpots] = useState<any[]>([]);
+  const [userSpotsCount, setUserSpotsCount] = useState<number>(0);
 
   useEffect(() => {
     const fetchFavourites = async () => {
@@ -22,6 +24,9 @@ export default function Profile() {
       try {
         const spots = await getFavouriteSpots(userId);
         setFavouriteSpots(spots);
+
+        const count = await getUserSpotsCount(userId);
+        setUserSpotsCount(count);
       } catch (err) {
         console.error("Error fetching favourites", err);
       }
@@ -50,7 +55,7 @@ export default function Profile() {
         {/* Statystyki */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>12</Text>
+            <Text style={styles.statNumber}>{userSpotsCount}</Text>
             <Text style={styles.statLabel}>Dodane</Text>
           </View>
 

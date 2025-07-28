@@ -20,7 +20,7 @@ export const getSpots = async (filters?: {
 };
 
 export const getSpotById = async (id: string) => {
-  const response = await axios.get(`${BASE_URL}/api/spots/${id}`);
+  const response = await axios.get(`${BASE_URL}/api/spots/spot/${id}`);
   return response.data;
 };
 
@@ -39,4 +39,9 @@ export const getCities = async (country: string): Promise<string[]> => {
     params: { country },
   });
   return response.data;
+};
+
+export const getUserSpotsCount = async (userId: string): Promise<number> => {
+  const response = await axios.get(`${BASE_URL}/api/spots/count/${userId}`);
+  return response.data.count;
 };

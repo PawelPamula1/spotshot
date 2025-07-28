@@ -77,6 +77,7 @@ export default function SpotDetailScreen() {
     try {
       await addToFavourites(userId, spot.id);
       setIsSaved(true);
+      setLikesCount((prev) => prev + 1);
     } catch (error) {
       console.error("Failed to save favorite:", error);
     }
