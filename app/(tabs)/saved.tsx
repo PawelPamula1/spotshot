@@ -33,12 +33,34 @@ export default function Saved() {
   }, [userId]);
 
   if (loading) {
-    return <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />;
+    return (
+      <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
+        <Stack.Screen
+          options={{
+            headerTitle: () => <HeaderLogo title="Saved Spots" />,
+            headerStyle: {
+              backgroundColor: "#121212",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
+        <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />
+      </View>
+    );
   }
 
   if (!savedSpots.length) {
     return (
       <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
+        <Stack.Screen
+          options={{
+            headerTitle: () => <HeaderLogo title="Saved Spots" />,
+            headerStyle: {
+              backgroundColor: "#121212",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
         <Text style={styles.empty}>Nie masz jeszcze zapisanych miejsc.</Text>
       </View>
     );

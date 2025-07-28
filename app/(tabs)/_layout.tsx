@@ -4,13 +4,10 @@ import { Platform } from "react-native";
 
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useAuth } from "@/provider/AuthProvider";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   const { isAuthenticated } = useAuth();
 
   return (
@@ -31,7 +28,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="explore"
           options={{
-            title: "Explore Spots",
+            title: "Explore",
             tabBarIcon: ({ color }) => (
               <MaterialIcons name="search" size={24} color={color} />
             ),
@@ -50,6 +47,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: "Spots",
           headerTitle: () => <HeaderLogo title="PhotoSpots" />,
           headerStyle: {
             backgroundColor: "#121212",

@@ -1,5 +1,6 @@
 import SignInForm from "@/components/ui/SignInForm";
 import SignUpForm from "@/components/ui/SignUpForm";
+import { Stack } from "expo-router";
 import React, { useState } from "react";
 import {
   Keyboard,
@@ -21,6 +22,15 @@ export default function AuthScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
+        <Stack.Screen
+          options={{
+            headerTitle: "",
+            headerStyle: {
+              backgroundColor: "#121212",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
         <View style={styles.inner}>
           <Text style={styles.title}>
             {mode === "login" ? "Sign In" : "Create Account"}

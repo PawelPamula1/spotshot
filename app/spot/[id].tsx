@@ -95,7 +95,23 @@ export default function SpotDetailScreen() {
   };
 
   if (loading) {
-    return <ActivityIndicator style={{ flex: 1, justifyContent: "center" }} />;
+    return (
+      <ScrollView style={styles.container}>
+        <Stack.Screen
+          options={{
+            title: "",
+            headerBackTitle: "Spots",
+            headerStyle: {
+              backgroundColor: "#121212",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
+        <ActivityIndicator
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        />
+      </ScrollView>
+    );
   }
 
   if (error || !spot) {
@@ -108,6 +124,7 @@ export default function SpotDetailScreen() {
     <ScrollView style={styles.container}>
       <Stack.Screen
         options={{
+          title: "",
           headerBackTitle: "Spots",
           headerStyle: {
             backgroundColor: "#121212",
