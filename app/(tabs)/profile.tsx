@@ -2,7 +2,9 @@ import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { getFavouriteSpots } from "@/lib/api/favourites";
 import { getUserSpotsCount } from "@/lib/api/spots";
 import { useAuth } from "@/provider/AuthProvider";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
+
 import { router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -58,56 +60,60 @@ export default function Profile() {
           <View style={{ flex: 1 }}>
             <Text style={styles.username}>@{profile?.username}</Text>
           </View>
-          <TouchableOpacity onPress={() => alert("Edit profile")}>
-            <Text style={styles.edit}>Edytuj profil</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Statystyki */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>{userSpotsCount}</Text>
-            <Text style={styles.statLabel}>Dodane</Text>
+            <Text style={styles.statLabel}>Spots Added</Text>
           </View>
 
           <View style={styles.statBox}>
             <Text style={styles.statNumber}>{favouriteSpots.length}</Text>
-            <Text style={styles.statLabel}>Ulubione</Text>
+            <Text style={styles.statLabel}>Spots Saved</Text>
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>💾 Zapisane miejsca</Text>
-          <TouchableOpacity onPress={() => router.push("/saved")}>
-            <View style={styles.previewRow}>
-              {favouriteSpots.slice(0, 3).map((spot) => (
-                <Image
-                  key={spot.id}
-                  source={spot.image}
-                  style={styles.previewImage}
-                />
-              ))}
-            </View>
-          </TouchableOpacity>
-        </View>
+        {!!favouriteSpots?.length && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Saved Spots</Text>
+            <TouchableOpacity onPress={() => router.push("/saved")}>
+              <View style={styles.previewRow}>
+                {favouriteSpots.slice(0, 3).map((spot) => (
+                  <Image
+                    key={spot.id}
+                    source={spot.image}
+                    style={styles.previewImage}
+                  />
+                ))}
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Ustawienia i feedback */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>⚙️ Ustawienia</Text>
+          <View style={styles.titleContainer}>
+            <Text>
+              <MaterialIcons name="settings" size={24} color="white" />
+            </Text>
+            <Text style={styles.sectionTitle}>Settings</Text>
+          </View>
 
           <TouchableOpacity
             onPress={() => signOut()}
             style={styles.settingItem}
           >
-            <Text style={styles.settingText}>🚪 Wyloguj się</Text>
+            <Text style={styles.settingText}>Sign Out</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingText}>🐞 Zgłoś problem / Sugestia</Text>
+            <Text style={styles.settingText}>Report</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingText}>ℹ️ O aplikacji</Text>
+            <Text style={styles.settingText}>About App</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -172,10 +178,15 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 36,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
     marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
     color: "#fff",
   },
   previewRow: {
