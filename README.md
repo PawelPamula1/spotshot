@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# 📸 SpotShot — Discover & Share the Best Photo Spots Around the World
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**SpotShot** is a mobile application for travelers, photographers, and content creators to discover, share, and save the best locations for taking photos — anywhere in the world. Whether you’re into breathtaking landscapes, vibrant city corners, hidden cafes, or unique street art, SpotShot helps you find exactly where to go and how to capture it.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+### 🗺 Explore Photo Spots
 
-2. Start the app
+Browse an interactive map filled with community-added photo locations. Zoom into any area and instantly see pins with images and descriptions.
 
-   ```bash
-   npx expo start
-   ```
+### 📄 Spot Details
 
-In the output, you'll find options to open the app in a
+Open a location to view:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- A high-quality preview image
+- Description of the place
+- Photography tips for the best shot
+- Exact coordinates with Google Maps integration
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### ➕ Add Your Own Spots
 
-## Get a fresh project
+Contribute to the community by adding your own photo spots:
 
-When you're ready, run:
+- Upload a photo from your device
+- Add the location (city, country, GPS coordinates)
+- Write a description and photography tips
+- Instantly share it with the world
 
-```bash
-npm run reset-project
-```
+### ❤️ Save to Favourites
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Keep track of your favorite locations by adding them to your **Saved Spots** list for quick access later.
 
-## Learn more
+### 📊 Likes & Popular Spots
 
-To learn more about developing your project with Expo, look at the following resources:
+See how many people have saved a spot — discover trending locations loved by the community.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 🚗 Google Maps Navigation
 
-## Join the community
+Navigate to any spot directly from the app with one tap.
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🎯 Project Vision
+
+SpotShot aims to become a global community of travelers and creators who share their favorite photo locations, inspiring others to explore the world in a more intentional and creative way.
+
+Over time, the app will expand with:
+
+- Community challenges
+- User profiles with photography portfolios
+- Advanced search and filtering
+- Offline spot saving for travelers without internet access
+
+---
