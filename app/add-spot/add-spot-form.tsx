@@ -108,7 +108,7 @@ export default function AddSpotForm() {
           )}
 
           {/* NAME */}
-          <Text style={styles.label}>Nazwa miejsca</Text>
+          <Text style={styles.label}>Name of the place</Text>
           <Controller
             control={control}
             name="name"
@@ -116,7 +116,7 @@ export default function AddSpotForm() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.input}
-                placeholder="Nazwa"
+                placeholder="Name"
                 value={value}
                 onChangeText={onChange}
               />
@@ -127,7 +127,7 @@ export default function AddSpotForm() {
           )}
 
           {/* DESCRIPTION */}
-          <Text style={styles.label}>Opis</Text>
+          <Text style={styles.label}>Description</Text>
           <Controller
             control={control}
             name="description"
@@ -135,7 +135,7 @@ export default function AddSpotForm() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={[styles.input, { height: 100 }]}
-                placeholder="Opis"
+                placeholder="Description"
                 value={value}
                 onChangeText={onChange}
                 multiline
@@ -167,7 +167,7 @@ export default function AddSpotForm() {
           )}
 
           {/* COUNTRY */}
-          <Text style={styles.label}>🌍 Kraj</Text>
+          <Text style={styles.label}>🌍 Country</Text>
           <Controller
             control={control}
             name="country"
@@ -185,7 +185,7 @@ export default function AddSpotForm() {
           )}
 
           {/* CITY */}
-          <Text style={styles.label}>🏙️ Miasto</Text>
+          <Text style={styles.label}>🏙️ City</Text>
           <Controller
             control={control}
             name="city"
@@ -207,7 +207,7 @@ export default function AddSpotForm() {
             onPress={pickImage}
             disabled={isSubmitting}
           >
-            <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
+            <Text style={styles.imageButtonText}>🖼️ Upload Photo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

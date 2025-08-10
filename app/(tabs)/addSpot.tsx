@@ -56,7 +56,7 @@ export default function PickLocationScreen() {
   if (loading || !region) {
     return (
       <View style={styles.centered}>
-        <Text>⏳ Ładowanie lokalizacji...</Text>
+        <Text>⏳ Loading location...</Text>
       </View>
     );
   }
@@ -89,7 +89,7 @@ export default function PickLocationScreen() {
       />
 
       <TouchableOpacity style={styles.button} onPress={handlePickLocation}>
-        <Text style={styles.buttonText}>Wybierz lokalizację</Text>
+        <Text style={styles.buttonText}>Choose location</Text>
       </TouchableOpacity>
     </View>
   );
