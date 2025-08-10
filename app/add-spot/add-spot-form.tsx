@@ -1,16 +1,12 @@
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
-import { createSpot } from "@/lib/api/spots";
+import { AddSpotFormValues, useAddSpot } from "@/hooks/useAddSpot";
 import { useAuth } from "@/provider/AuthProvider";
-import { uploadToCloudinary } from "@/utils/cloudinary";
 import { Image } from "expo-image";
-import * as ImagePicker from "expo-image-picker";
-import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { Stack, useLocalSearchParams } from "expo-router";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
   Dimensions,
-  Image as RNImage,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -23,94 +19,34 @@ import {
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import uuid from "react-native-uuid";
 
 export default function AddSpotForm() {
   const { latitude, longitude } = useLocalSearchParams<{
     latitude: string;
     longitude: string;
   }>();
+  const location =
+    latitude && longitude
+      ? { latitude: parseFloat(latitude), longitude: parseFloat(longitude) }
+      : null;
   const { userId } = useAuth();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<AddSpotFormValues>({
+    defaultValues: {
+      name: "",
+      description: "",
+      photo_tips: "",
+      country: "",
+      city: "",
+    },
+  });
 
-  const [photoDimensions, setPhotoDimensions] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
-
-  const location =
-    latitude && longitude
-      ? { latitude: parseFloat(latitude), longitude: parseFloat(longitude) }
-      : null;
-
-  const handlePickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.5,
-    });
-
-    if (!result.canceled && result.assets?.length > 0) {
-      setPhoto(result.assets[0]);
-
-      RNImage.getSize(result.assets[0].uri, (width, height) => {
-        setPhotoDimensions({ width, height });
-      });
-    }
-  };
-
-  const onSubmit = async (data: any) => {
-    try {
-      if (!photo) {
-        Alert.alert("Błąd", "Dodaj zdjęcie.");
-        return;
-      }
-
-      if (!location) {
-        Alert.alert("Błąd", "Nie określono lokalizacji.");
-        return;
-      }
-
-      const { city, country, description, name, photo_tips } = data;
-
-      const source = {
-        uri: photo.uri,
-        type: photo.mimeType,
-        name: photo.fileName || `photo-${Date.now()}.jpg`,
-      };
-
-      const imageUrl = await uploadToCloudinary(source);
-
-      const newSpot = {
-        id: uuid.v4() as string,
-        city,
-        country,
-        description,
-        name,
-        photo_tips,
-        image: imageUrl,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        author_id: userId,
-      };
-
-      const savedSpot = await createSpot(newSpot);
-
-      Alert.alert("Sukces", "Lokalizacja została dodana!");
-
-      router.push("/explore");
-
-      setPhoto(null);
-    } catch (error: any) {
-      console.error("Błąd przy dodawaniu spotu:", error);
-      Alert.alert("Błąd", "Coś poszło nie tak. Spróbuj ponownie.");
-    }
-  };
+  const { photo, photoDimensions, isSubmitting, pickImage, onSubmit } =
+    useAddSpot({ userId, location });
 
   const screenWidth = Dimensions.get("window").width;
   const calculatedHeight = photoDimensions
@@ -130,9 +66,7 @@ export default function AddSpotForm() {
           <Stack.Screen
             options={{
               headerTitle: () => <HeaderLogo title="Add Spot" />,
-              headerStyle: {
-                backgroundColor: "#121212",
-              },
+              headerStyle: { backgroundColor: "#121212" },
               headerTintColor: "#fff",
               headerBackTitle: "Cancel",
             }}
@@ -268,15 +202,22 @@ export default function AddSpotForm() {
             <Text style={styles.error}>{errors.city.message}</Text>
           )}
 
-          <TouchableOpacity style={styles.button} onPress={handlePickImage}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={pickImage}
+            disabled={isSubmitting}
+          >
             <Text style={styles.imageButtonText}>🖼️ Wybierz zdjęcie</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.submitButton}
+            style={[styles.submitButton, isSubmitting && { opacity: 0.6 }]}
             onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
           >
-            <Text style={styles.submitButtonText}>➕ Add Spot</Text>
+            <Text style={styles.submitButtonText}>
+              {isSubmitting ? "Adding..." : "➕ Add Spot"}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -285,23 +226,11 @@ export default function AddSpotForm() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "#121212",
-  },
+  wrapper: { flex: 1, backgroundColor: "#121212" },
   container: { flex: 1, backgroundColor: "#0D0D0D" },
   inner: { padding: 20 },
-  label: {
-    fontWeight: "600",
-    fontSize: 16,
-    marginBottom: 6,
-    color: "#fff",
-  },
-  error: {
-    color: "#f87171",
-    marginBottom: 10,
-    fontSize: 13,
-  },
+  label: { fontWeight: "600", fontSize: 16, marginBottom: 6, color: "#fff" },
+  error: { color: "#f87171", marginBottom: 10, fontSize: 13 },
   input: {
     backgroundColor: "#1A1A1A",
     borderRadius: 8,
@@ -331,18 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 12,
   },
-  imageButton: {
-    backgroundColor: "#2563EB",
-    padding: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  imageButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
-  },
+  imageButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
   submitButton: {
     backgroundColor: "#10B981",
     padding: 16,
@@ -350,9 +268,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
+  submitButtonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
 });

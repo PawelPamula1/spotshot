@@ -1,10 +1,9 @@
 import { Filters } from "@/components/Filters";
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { SpotGrid } from "@/components/ui/SpotGrid";
-import { getSpots } from "@/lib/api/spots";
-import { Spot } from "@/types/spot";
+import { useSpots } from "@/hooks/useSpots";
 import { Stack } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -14,62 +13,28 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const CARD_MARGIN = 8;
-
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
-  const [search, setSearch] = useState("");
-  const [allSpots, setAllSpots] = useState<Spot[]>([]);
-  const [filteredSpots, setFilteredSpots] = useState<Spot[]>([]);
-  const [loading, setLoading] = useState(true);
-
   const theme = useColorScheme() ?? "light";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getSpots();
-        setAllSpots(data);
-        setFilteredSpots(data);
-      } catch (error) {
-        console.error("Failed to fetch spots:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleSearch = (text: string) => {
-    setSearch(text);
-    const query = text.toLowerCase();
-    const filtered = allSpots.filter((spot) => {
-      return (
-        spot.name.toLowerCase().includes(query) ||
-        spot.city.toLowerCase().includes(query) ||
-        spot.description.toLowerCase().includes(query)
-      );
-    });
-    setFilteredSpots(filtered);
-  };
+  const { search, handleSearch, filteredSpots, loading, onFilter } = useSpots();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
       <Stack.Screen
         options={{
           headerTitle: () => <HeaderLogo title="Explore Spots" />,
-          headerStyle: {
-            backgroundColor: "#121212",
-          },
+          headerStyle: { backgroundColor: "#121212" },
           headerTintColor: "#fff",
           headerSearchBarOptions: {
             placeholder: "Search",
-            onChangeText: (e) => handleSearch(e.nativeEvent.text),
+            onChangeText: (e: any) => handleSearch(e.nativeEvent.text),
           },
         }}
       />
-      <Filters onFilter={(filtered) => setFilteredSpots(filtered)} />
+
+      <Filters onFilter={onFilter} />
+
       {search ? (
         <Text
           style={[
@@ -98,14 +63,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212",
-  },
-  content: {
-    paddingVertical: 16,
-  },
-  loading: {
-    marginTop: 20,
-    textAlign: "center",
-    color: "#ccc",
   },
   searchLabel: {
     paddingHorizontal: 16,

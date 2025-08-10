@@ -3,19 +3,13 @@ import React, { useState } from "react";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 
 export default function SignInForm() {
-  const { signIn } = useAuth();
+  const { signIn, isSigningIn, lastError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-    setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
-
-    if (error) {
-      Alert.alert("Login Failed", error);
-    }
+    const res = await signIn(email, password);
+    if (!res.ok) Alert.alert("Login Failed", res.error);
   };
 
   return (
@@ -39,9 +33,9 @@ export default function SignInForm() {
         autoCapitalize="none"
       />
       <Button
-        title={loading ? "Signing in..." : "Sign In"}
+        title={isSigningIn ? "Signing in..." : "Sign In"}
         onPress={handleSignIn}
-        disabled={loading}
+        disabled={isSigningIn}
       />
     </View>
   );

@@ -3,46 +3,20 @@ import React, { useState } from "react";
 import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
 
 export default function SignUpForm() {
-  const { signUp } = useAuth();
+  const { signUp, isSigningUp } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    if (!username || !email || !password) {
-      Alert.alert("Missing fields", "Please fill out all fields.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Invalid email", "Please enter a valid email address.");
-      return;
-    }
-
-    if (username.length < 3) {
-      Alert.alert(
-        "Invalid username",
-        "Username must be at least 3 characters long."
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert(
-        "Weak password",
-        "Password must be at least 6 characters long."
-      );
-      return;
-    }
-
-    setLoading(true);
-    const { error } = await signUp(email, password, username);
-    setLoading(false);
-
-    if (error) {
-      Alert.alert("Sign Up Failed", error);
+    const res = await signUp(email, password, username);
+    if (!res.ok) {
+      const msg =
+        res.fieldErrors?.email ||
+        res.fieldErrors?.username ||
+        res.fieldErrors?.password ||
+        res.error;
+      Alert.alert("Sign Up Failed", msg);
     } else {
       Alert.alert("Success", "Account created and you're logged in!");
     }
@@ -77,9 +51,9 @@ export default function SignUpForm() {
         autoCapitalize="none"
       />
       <Button
-        title={loading ? "Creating account..." : "Register"}
+        title={isSigningUp ? "Creating account..." : "Register"}
         onPress={handleSignUp}
-        disabled={loading}
+        disabled={isSigningUp}
       />
     </View>
   );

@@ -1,8 +1,9 @@
-import { getSpots } from "@/lib/api/spots";
+import { useSpots } from "@/hooks/useSpots";
 import { useAuth } from "@/provider/AuthProvider";
+import type { Spot } from "@/types/spot";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -20,38 +21,25 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SpotsScreen() {
   const mapRef = useRef<MapView>(null);
-  const { latitude, longitude } = useLocalSearchParams();
-
-  const [spots, setSpots] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
+  const { latitude, longitude } = useLocalSearchParams<{
+    latitude?: string;
+    longitude?: string;
+  }>();
   const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    const fetchSpots = async () => {
-      try {
-        const data = await getSpots();
-        setSpots(data);
-      } catch (err) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSpots();
-  }, []);
+  // Reuse the same hook
+  const { allSpots: spots, loading, error } = useSpots();
 
+  // Focus map if deep-linked with coords
   useEffect(() => {
-    if (latitude && longitude && mapRef.current) {
-      const region: Region = {
-        latitude: parseFloat(String(latitude)),
-        longitude: parseFloat(String(longitude)),
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      };
-      mapRef.current.animateToRegion(region, 1000);
-    }
+    if (!latitude || !longitude || !mapRef.current) return;
+    const region: Region = {
+      latitude: parseFloat(String(latitude)),
+      longitude: parseFloat(String(longitude)),
+      latitudeDelta: 0.05,
+      longitudeDelta: 0.05,
+    };
+    mapRef.current.animateToRegion(region, 1000);
   }, [latitude, longitude]);
 
   if (loading) {
@@ -78,13 +66,10 @@ export default function SpotsScreen() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation
       >
-        {spots.map((spot) => (
+        {spots.map((spot: Spot) => (
           <Marker
             key={spot.id}
-            coordinate={{
-              latitude: spot.latitude,
-              longitude: spot.longitude,
-            }}
+            coordinate={{ latitude: spot.latitude, longitude: spot.longitude }}
             title={spot.name}
           >
             <Callout
