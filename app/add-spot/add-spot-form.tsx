@@ -112,7 +112,7 @@ export default function AddSpotForm() {
           <Controller
             control={control}
             name="name"
-            rules={{ required: "Podaj nazwę miejsca" }}
+            rules={{ required: "Write name of the place" }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.input}
@@ -131,7 +131,7 @@ export default function AddSpotForm() {
           <Controller
             control={control}
             name="description"
-            rules={{ required: "Podaj opis" }}
+            rules={{ required: "Write description" }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={[styles.input, { height: 100 }]}
@@ -151,7 +151,7 @@ export default function AddSpotForm() {
           <Controller
             control={control}
             name="photo_tips"
-            rules={{ required: "Podaj opis" }}
+            rules={{ required: "Write instructions" }}
             render={({ field: { onChange, value } }) => (
               <TextInput
                 style={[styles.input, { height: 100 }]}
@@ -164,42 +164,6 @@ export default function AddSpotForm() {
           />
           {typeof errors.photo_tips?.message === "string" && (
             <Text style={styles.error}>{errors.photo_tips.message}</Text>
-          )}
-
-          {/* COUNTRY */}
-          <Text style={styles.label}>🌍 Country</Text>
-          <Controller
-            control={control}
-            name="country"
-            rules={{ required: "Podaj kraj" }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={styles.input}
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {typeof errors.country?.message === "string" && (
-            <Text style={styles.error}>{errors.country.message}</Text>
-          )}
-
-          {/* CITY */}
-          <Text style={styles.label}>🏙️ City</Text>
-          <Controller
-            control={control}
-            name="city"
-            rules={{ required: "Podaj miasto" }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={styles.input}
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {typeof errors.city?.message === "string" && (
-            <Text style={styles.error}>{errors.city.message}</Text>
           )}
 
           <TouchableOpacity

@@ -1,8 +1,9 @@
 import { createSpot } from "@/lib/api/spots";
 import { uploadToCloudinary } from "@/utils/cloudinary";
+import { getAddressFromCoords } from "@/utils/getAddressFromCoords";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Image as RNImage } from "react-native";
 import uuid from "react-native-uuid";
 
@@ -29,6 +30,30 @@ export function useAddSpot(opts: {
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submittingRef = useRef(false);
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+
+  useEffect(() => {
+    if (!location) return;
+    let cancelled = false;
+
+    (async () => {
+      const addr = await getAddressFromCoords(
+        location.latitude,
+        location.longitude
+      );
+      if (cancelled) return;
+
+      if (addr) {
+        setCity(addr.city);
+        setCountry(addr.country);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location]);
 
   const pickImage = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -66,7 +91,7 @@ export function useAddSpot(opts: {
           return;
         }
 
-        const { city, country, description, name, photo_tips } = data;
+        const { description, name, photo_tips } = data;
 
         const source = {
           uri: photo.uri,

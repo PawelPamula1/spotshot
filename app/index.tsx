@@ -1,11 +1,16 @@
 import Logo from "@/assets/images/logo2.png";
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Welcome() {
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
       <View style={styles.inner}>
         <Image
           source={Logo} // ← podmień na swój URL lub lokalne logo
