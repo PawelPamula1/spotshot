@@ -37,12 +37,8 @@ export default function Profile() {
 
       <View style={styles.inner}>
         <View style={styles.header}>
-          <Image
-            source={{ uri: profile?.avatar_url || "https://i.pravatar.cc/150" }}
-            style={styles.avatar}
-          />
           <View style={{ flex: 1 }}>
-            <Text style={styles.username}>@{profile?.username}</Text>
+            <Text style={styles.username}>{profile?.username}</Text>
           </View>
         </View>
 

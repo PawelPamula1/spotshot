@@ -94,25 +94,20 @@ export default function SpotDetailScreen() {
 
       {author && (
         <View style={styles.authorCard}>
-          <ExpoImage
-            source={{ uri: author?.avatar_url || "https://i.pravatar.cc/150" }}
-            style={styles.avatar}
-          />
           <Text style={styles.authorText}>
-            Dodane przez{" "}
-            <Text style={styles.authorName}>{author?.username}</Text>
+            Added by <Text style={styles.authorName}>{author?.username}</Text>
           </Text>
         </View>
       )}
 
       <View style={styles.tipsCard}>
-        <Text style={styles.tipsTitle}>📸 Wskazówki:</Text>
+        <Text style={styles.tipsTitle}>📸 Instructions for taking photo:</Text>
         <Text style={styles.tip}>{spot.photo_tips}</Text>
       </View>
 
       <View style={styles.buttonGroup}>
         <TouchableOpacity onPress={handleOpenGoogleMaps} style={styles.button}>
-          <Text style={styles.buttonText}>Jak tam dojechać </Text>
+          <Text style={styles.buttonText}>Show on Google Maps</Text>
           <Text>
             <Entypo
               name="direction"
