@@ -85,7 +85,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
         onPress={() => setShowFilters((prev) => !prev)}
       >
         <Text style={styles.toggleButtonText}>
-          🧭 {showFilters ? "Ukryj filtry" : "Pokaż filtry"}
+          {showFilters ? "Hide Filters" : "Show Filters"}
         </Text>
       </TouchableOpacity>
 
@@ -96,7 +96,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
               style={styles.button}
               onPress={() => setShowCountryModal(true)}
             >
-              <Text style={styles.buttonText}>🌍 Kraj</Text>
+              <Text style={styles.buttonText}>Country</Text>
               <Text style={{ color: "#aaa", marginTop: 4 }}>
                 {selectedCountry}
               </Text>
@@ -107,7 +107,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
               onPress={() => setShowCityModal(true)}
               disabled={selectedCountry === "All"}
             >
-              <Text style={styles.buttonText}>🏙️ Miasto</Text>
+              <Text style={styles.buttonText}>City</Text>
               <Text style={{ color: "#aaa", marginTop: 4 }}>
                 {selectedCity}
               </Text>
@@ -115,7 +115,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
           </View>
 
           <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
-            <Text style={styles.clearButtonText}>🧹 Wyczyść</Text>
+            <Text style={styles.clearButtonText}>Clear</Text>
           </TouchableOpacity>
         </>
       )}
@@ -124,13 +124,12 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
       <Modal visible={showCountryModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Wybierz kraj:</Text>
+            <Text style={styles.modalTitle}>Choose country:</Text>
             <Picker
               selectedValue={selectedCountry}
               onValueChange={(value) => {
                 setSelectedCountry(value);
                 setSelectedCity("All");
-                setShowCountryModal(false);
               }}
             >
               {countries.map((country) => (
@@ -141,9 +140,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
               onPress={() => setShowCountryModal(false)}
               style={styles.modalCancel}
             >
-              <Text style={{ color: "#007AFF", fontWeight: "600" }}>
-                Anuluj
-              </Text>
+              <Text style={{ color: "#007AFF", fontWeight: "600" }}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -153,12 +150,11 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
       <Modal visible={showCityModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>Wybierz miasto:</Text>
+            <Text style={styles.modalTitle}>Choose city:</Text>
             <Picker
               selectedValue={selectedCity}
               onValueChange={(value) => {
                 setSelectedCity(value);
-                setShowCityModal(false);
               }}
             >
               {cities.map((city) => (
@@ -169,9 +165,7 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
               onPress={() => setShowCityModal(false)}
               style={styles.modalCancel}
             >
-              <Text style={{ color: "#007AFF", fontWeight: "600" }}>
-                Anuluj
-              </Text>
+              <Text style={{ color: "#007AFF", fontWeight: "600" }}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>

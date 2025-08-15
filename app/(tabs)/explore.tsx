@@ -17,7 +17,7 @@ export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const theme = useColorScheme() ?? "light";
 
-  const { search, handleSearch, filteredSpots, loading, onFilter } = useSpots();
+  const { search, filteredSpots, loading, onFilter } = useSpots();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
@@ -26,10 +26,6 @@ export default function ExploreScreen() {
           headerTitle: () => <HeaderLogo title="Explore Spots" />,
           headerStyle: { backgroundColor: "#121212" },
           headerTintColor: "#fff",
-          headerSearchBarOptions: {
-            placeholder: "Search",
-            onChangeText: (e: any) => handleSearch(e.nativeEvent.text),
-          },
         }}
       />
 
