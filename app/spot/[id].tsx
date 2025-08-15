@@ -3,7 +3,7 @@ import { useSpot } from "@/hooks/useSpot";
 import { openInMaps } from "@/utils/maps";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image as ExpoImage } from "expo-image";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
@@ -106,8 +106,30 @@ export default function SpotDetailScreen() {
       </View>
 
       <View style={styles.buttonGroup}>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/(tabs)",
+              params: {
+                latitude: spot.latitude.toString(),
+                longitude: spot.longitude.toString(),
+              },
+            })
+          }
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Show on Photo Spots Maps</Text>
+          <Text>
+            <Entypo
+              name="direction"
+              size={24}
+              color="white"
+              style={{ marginLeft: 6 }}
+            />
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleOpenGoogleMaps} style={styles.button}>
-          <Text style={styles.buttonText}>Show on Google Maps</Text>
+          <Text style={styles.buttonText}>Open Google Maps</Text>
           <Text>
             <Entypo
               name="direction"

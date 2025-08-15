@@ -3,7 +3,7 @@ import { useAuth } from "@/provider/AuthProvider";
 import type { Spot } from "@/types/spot";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -26,21 +26,37 @@ export default function SpotsScreen() {
     longitude?: string;
   }>();
   const { isAuthenticated } = useAuth();
-
-  // Reuse the same hook
   const { allSpots: spots, loading, error } = useSpots();
 
-  // Focus map if deep-linked with coords
-  useEffect(() => {
-    if (!latitude || !longitude || !mapRef.current) return;
-    const region: Region = {
-      latitude: parseFloat(String(latitude)),
-      longitude: parseFloat(String(longitude)),
+  const [mapReady, setMapReady] = useState(false);
+
+  const targetRegion = useMemo<Region | null>(() => {
+    if (!latitude || !longitude) return null;
+    const lat = Number(latitude);
+    const lon = Number(longitude);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
+    return {
+      latitude: lat,
+      longitude: lon,
       latitudeDelta: 0.05,
       longitudeDelta: 0.05,
     };
-    mapRef.current.animateToRegion(region, 1000);
   }, [latitude, longitude]);
+
+  const focusIfPossible = () => {
+    if (mapRef.current && targetRegion) {
+      mapRef.current.animateToRegion(targetRegion, 800);
+    }
+  };
+
+  const handleMapReady = () => {
+    setMapReady(true);
+    focusIfPossible();
+  };
+
+  useEffect(() => {
+    if (mapReady) focusIfPossible();
+  }, [mapReady, targetRegion]);
 
   if (loading) {
     return (
@@ -53,7 +69,7 @@ export default function SpotsScreen() {
   if (error) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <Text>Wystąpił błąd podczas ładowania danych.</Text>
+        <Text>Error loading the data</Text>
       </SafeAreaView>
     );
   }
@@ -65,6 +81,7 @@ export default function SpotsScreen() {
         style={styles.map}
         provider={PROVIDER_GOOGLE}
         showsUserLocation
+        onMapReady={handleMapReady}
       >
         {spots.map((spot: Spot) => (
           <Marker
