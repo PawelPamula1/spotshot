@@ -103,7 +103,10 @@ export default function Profile() {
             <Text style={styles.settingText}>Report</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.settingItem}>
+          <TouchableOpacity
+            onPress={() => router.push("/about")}
+            style={styles.settingItem}
+          >
             <Text style={styles.settingText}>About App</Text>
           </TouchableOpacity>
         </View>

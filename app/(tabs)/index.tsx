@@ -45,7 +45,7 @@ export default function SpotsScreen() {
 
   const focusIfPossible = () => {
     if (mapRef.current && targetRegion) {
-      mapRef.current.animateToRegion(targetRegion, 800);
+      mapRef.current.animateToRegion(targetRegion, 2000);
     }
   };
 
