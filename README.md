@@ -11,8 +11,8 @@
 Browse an interactive map filled with community-added photo locations. Zoom into any area and instantly see pins with images and descriptions.
 
 <p align="center">
-  <img src="screenshots/explore-spots.png" width="230" alt="Explore Spots" />
-  <img src="screenshots/full-map.png" width="230" alt="Full Map" />
+  <img src="assets/images/explore-spots.png" width="230" alt="Explore Spots" />
+  <img src="assets/images/full-map.png" width="230" alt="Full Map" />
 </p>
 
 ### 📄 Spot Details
@@ -25,7 +25,7 @@ Open a location to view:
 - Exact coordinates with Google Maps integration
 
 <p align="center">
-  <img src="screenshots/spot-screen.png" width="230" alt="Spot Details" />
+  <img src="assets/images/spot-screen.png" width="230" alt="Spot Details" />
 </p>
 
 ### ➕ Add Your Own Spots
@@ -38,7 +38,7 @@ Contribute to the community by adding your own photo spots:
 - Instantly share it with the world
 
 <p align="center">
-  <img src="screenshots/add-spot.png" width="230" alt="Add Spot" />
+  <img src="assets/images/add-spot.png" width="230" alt="Add Spot" />
 </p>
 
 ### ❤️ Save to Favourites
@@ -46,7 +46,7 @@ Contribute to the community by adding your own photo spots:
 Keep track of your favorite locations by adding them to your **Saved Spots** list for quick access later.
 
 <p align="center">
-  <img src="screenshots/saved-spots.png" width="230" alt="Saved Spots" />
+  <img src="assets/images/saved-spots.png" width="230" alt="Saved Spots" />
 </p>
 
 ### 📊 Likes & Popular Spots
