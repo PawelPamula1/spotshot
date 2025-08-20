@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000"; // Zmienisz na produkcyjny adres, np. przez .env
-// const BASE_URL = "https://spotshot-api.onrender.com";
+const BASE_URL = process.env.EXPO_PUBLIC_NATIVE_SERVER_URL;
 
 export const getSpots = async (filters?: {
   country?: string;
