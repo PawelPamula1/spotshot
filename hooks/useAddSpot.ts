@@ -1,5 +1,6 @@
 import { createSpot } from "@/lib/api/spots";
 import { uploadToCloudinary } from "@/utils/cloudinary";
+import { compressImageForUpload } from "@/utils/compressImage";
 import { getAddressFromCoords } from "@/utils/getAddressFromCoords";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
@@ -93,9 +94,13 @@ export function useAddSpot(opts: {
 
         const { description, name, photo_tips } = data;
 
+        const compressedUri = await compressImageForUpload(photo.uri);
+
+        console.log(compressedUri);
+
         const source = {
-          uri: photo.uri,
-          type: photo.mimeType,
+          uri: compressedUri,
+          type: "image/jpeg",
           name: photo.fileName || `photo-${Date.now()}.jpg`,
         } as const;
 
