@@ -7,7 +7,6 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Dimensions,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,7 +14,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
@@ -54,138 +52,138 @@ export default function AddSpotForm() {
     : 300;
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.wrapper}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.wrapper}
+    >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.inner}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.inner}
-        >
-          <Stack.Screen
-            options={{
-              headerTitle: () => <HeaderLogo title="Add Spot" />,
-              headerStyle: { backgroundColor: "#121212" },
-              headerTintColor: "#fff",
-              headerBackTitle: "Cancel",
+        <Stack.Screen
+          options={{
+            headerTitle: () => <HeaderLogo title="Add Spot" />,
+            headerStyle: { backgroundColor: "#121212" },
+            headerTintColor: "#fff",
+            headerBackTitle: "Cancel",
+          }}
+        />
+
+        {photo && (
+          <Image
+            source={{ uri: photo.uri }}
+            contentFit="contain"
+            style={{
+              width: "100%",
+              height: calculatedHeight,
+              borderRadius: 12,
+              marginBottom: 20,
             }}
           />
+        )}
 
-          {photo && (
-            <Image
-              source={{ uri: photo.uri }}
-              contentFit="contain"
-              style={{
-                width: "100%",
-                height: calculatedHeight,
-                borderRadius: 12,
-                marginBottom: 20,
+        {location && (
+          <View style={styles.mapContainer}>
+            <MapView
+              style={{ flex: 1 }}
+              initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
               }}
+              provider={PROVIDER_GOOGLE}
+              scrollEnabled={false}
+              zoomEnabled={false}
+              rotateEnabled={false}
+              pitchEnabled={false}
+              pointerEvents="none"
+            >
+              <Marker coordinate={location} />
+            </MapView>
+          </View>
+        )}
+
+        {/* NAME */}
+        <Text style={styles.label}>Name of the place</Text>
+        <Controller
+          control={control}
+          name="name"
+          rules={{ required: "Write name of the place" }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              value={value}
+              onChangeText={onChange}
             />
           )}
+        />
+        {typeof errors.name?.message === "string" && (
+          <Text style={styles.error}>{errors.name.message}</Text>
+        )}
 
-          {location && (
-            <View style={styles.mapContainer}>
-              <MapView
-                style={{ flex: 1 }}
-                initialRegion={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-                provider={PROVIDER_GOOGLE}
-                scrollEnabled={false}
-                zoomEnabled={false}
-                rotateEnabled={false}
-                pitchEnabled={false}
-                pointerEvents="none"
-              >
-                <Marker coordinate={location} />
-              </MapView>
-            </View>
+        {/* DESCRIPTION */}
+        <Text style={styles.label}>Description</Text>
+        <Controller
+          control={control}
+          name="description"
+          rules={{ required: "Write description" }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              placeholder="Description"
+              value={value}
+              onChangeText={onChange}
+              multiline
+            />
           )}
+        />
+        {typeof errors.description?.message === "string" && (
+          <Text style={styles.error}>{errors.description.message}</Text>
+        )}
 
-          {/* NAME */}
-          <Text style={styles.label}>Name of the place</Text>
-          <Controller
-            control={control}
-            name="name"
-            rules={{ required: "Write name of the place" }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Name"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {typeof errors.name?.message === "string" && (
-            <Text style={styles.error}>{errors.name.message}</Text>
+        {/* photo_tips */}
+        <Text style={styles.label}>Instruction for taking photo</Text>
+        <Controller
+          control={control}
+          name="photo_tips"
+          rules={{ required: "Write instructions" }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              placeholder="Write your instructions"
+              value={value}
+              onChangeText={onChange}
+              multiline
+            />
           )}
+        />
+        {typeof errors.photo_tips?.message === "string" && (
+          <Text style={styles.error}>{errors.photo_tips.message}</Text>
+        )}
 
-          {/* DESCRIPTION */}
-          <Text style={styles.label}>Description</Text>
-          <Controller
-            control={control}
-            name="description"
-            rules={{ required: "Write description" }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={[styles.input, { height: 100 }]}
-                placeholder="Description"
-                value={value}
-                onChangeText={onChange}
-                multiline
-              />
-            )}
-          />
-          {typeof errors.description?.message === "string" && (
-            <Text style={styles.error}>{errors.description.message}</Text>
-          )}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={pickImage}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.imageButtonText}>🖼️ Upload Photo</Text>
+        </TouchableOpacity>
 
-          {/* photo_tips */}
-          <Text style={styles.label}>Instruction for taking photo</Text>
-          <Controller
-            control={control}
-            name="photo_tips"
-            rules={{ required: "Write instructions" }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={[styles.input, { height: 100 }]}
-                placeholder="Write your instructions"
-                value={value}
-                onChangeText={onChange}
-                multiline
-              />
-            )}
-          />
-          {typeof errors.photo_tips?.message === "string" && (
-            <Text style={styles.error}>{errors.photo_tips.message}</Text>
-          )}
-
-          <TouchableOpacity
-            style={styles.button}
-            onPress={pickImage}
-            disabled={isSubmitting}
-          >
-            <Text style={styles.imageButtonText}>🖼️ Upload Photo</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.submitButton, isSubmitting && { opacity: 0.6 }]}
-            onPress={handleSubmit(onSubmit)}
-            disabled={isSubmitting}
-          >
-            <Text style={styles.submitButtonText}>
-              {isSubmitting ? "Adding..." : "➕ Add Spot"}
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+        <TouchableOpacity
+          style={[styles.submitButton, isSubmitting && { opacity: 0.6 }]}
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.submitButtonText}>
+            {isSubmitting ? "Adding..." : "➕ Add Spot"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

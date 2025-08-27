@@ -67,11 +67,18 @@ export default function SpotDetailScreen() {
         }}
       />
 
-      <ExpoImage
-        source={{ uri: spot.image }}
-        style={[styles.heroImage, { height: calculatedHeight }]}
-        contentFit="contain"
-      />
+      {photoDimensions ? (
+        <ExpoImage
+          source={{ uri: spot.image }}
+          style={[styles.heroImage, { height: calculatedHeight }]}
+          contentFit="cover"
+          transition={300}
+        />
+      ) : (
+        <View
+          style={[styles.heroImage, { height: 300, backgroundColor: "#222" }]}
+        />
+      )}
 
       <View style={styles.imageInfo}>
         <View>

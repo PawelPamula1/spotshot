@@ -11,10 +11,8 @@ export function openInMaps(
   const gmaps = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
     destination
   )}&travelmode=${mode}`;
-  const apple = `http://maps.apple.com/?daddr=${encodeURIComponent(
-    destination
-  )}&dirflg=${modeFlag(mode)}`;
-  const url = Platform.select({ ios: apple, default: gmaps })!;
+
+  const url = Platform.select({ ios: gmaps, default: gmaps })!;
   return Linking.openURL(url);
 }
 
