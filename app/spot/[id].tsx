@@ -27,7 +27,14 @@ export default function SpotDetailScreen() {
 
   if (loading) {
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}
+      >
         <Stack.Screen
           options={{
             title: "",
@@ -37,7 +44,12 @@ export default function SpotDetailScreen() {
           }}
         />
         <ActivityIndicator
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          size={"large"}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         />
       </ScrollView>
     );
@@ -108,7 +120,7 @@ export default function SpotDetailScreen() {
       )}
 
       <View style={styles.tipsCard}>
-        <Text style={styles.tipsTitle}>📸 Instructions for taking photo:</Text>
+        <Text style={styles.tipsTitle}>Instructions for taking photo:</Text>
         <Text style={styles.tip}>{spot.photo_tips}</Text>
       </View>
 

@@ -99,10 +99,6 @@ export default function Profile() {
             <Text style={styles.settingText}>Sign Out</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.settingItem}>
-            <Text style={styles.settingText}>Report</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity
             onPress={() => router.push("/about")}
             style={styles.settingItem}
