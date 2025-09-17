@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: width * 1.3,
+    height: width * 1.1,
     marginBottom: 16,
   },
   title: {
