@@ -120,7 +120,7 @@ export function useAddSpot(opts: {
         };
 
         await createSpot(newSpot);
-        Alert.alert("Sukces", "Lokalizacja została dodana!");
+        Alert.alert("Success", "Spot added!");
         setPhoto(null);
         router.push("/explore");
       } catch (error: any) {
