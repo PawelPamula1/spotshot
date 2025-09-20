@@ -3,7 +3,6 @@ import React from "react";
 import { Platform } from "react-native";
 
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
-import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/provider/AuthProvider";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -13,7 +12,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.light.tint,
+        tabBarActiveTintColor: "#6D5FFD",
         headerShown: true,
         tabBarStyle: Platform.select({
           ios: {

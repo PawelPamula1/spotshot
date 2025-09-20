@@ -1,5 +1,6 @@
 import { getCities, getCountries, getSpots } from "@/lib/api/spots";
 import { Spot } from "@/types/spot"; // upewnij się, że masz ten typ
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
@@ -79,15 +80,23 @@ export const Filters: React.FC<FiltersProps> = ({ onFilter }) => {
   };
 
   return (
-    <View style={{ marginVertical: 16 }}>
-      <TouchableOpacity
-        style={styles.toggleButton}
-        onPress={() => setShowFilters((prev) => !prev)}
-      >
-        <Text style={styles.toggleButtonText}>
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </Text>
-      </TouchableOpacity>
+    <View>
+      {showFilters ? (
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => setShowFilters((prev) => !prev)}
+        >
+          <Text style={styles.toggleButtonText}>{"Hide Filters"}</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => setShowFilters((prev) => !prev)}
+          style={styles.filterWrapper}
+        >
+          <MaterialIcons name="filter-alt" size={16} color="#fff" />
+          <Text style={styles.filterText}>Filter Spots</Text>
+        </TouchableOpacity>
+      )}
 
       {showFilters && (
         <>
@@ -181,7 +190,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: "#2E2E2E",
-    marginBottom: 12,
+    marginVertical: 12,
     alignItems: "center",
   },
   toggleButtonText: {
@@ -189,6 +198,14 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 15,
   },
+  filterWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginHorizontal: 20,
+    paddingVertical: 10,
+  },
+  filterText: { color: "#fff" },
   buttonsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

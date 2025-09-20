@@ -86,6 +86,7 @@ export default function SpotsScreen() {
         {spots.map((spot: Spot) => (
           <Marker
             key={spot.id}
+            pinColor="#6D5FFD"
             coordinate={{ latitude: spot.latitude, longitude: spot.longitude }}
             title={spot.name}
           >
