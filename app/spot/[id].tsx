@@ -1,12 +1,16 @@
 import { useFavouriteSpot } from "@/hooks/useFavourites";
 import { useSpot } from "@/hooks/useSpot";
+import { reportSpot } from "@/lib/api/moderation";
+import { useAuth } from "@/provider/AuthProvider";
 import { openInMaps } from "@/utils/maps";
+
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image as ExpoImage } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   ScrollView,
   StyleSheet,
@@ -14,6 +18,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { ReportModal } from "@/components/ReportModal";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function SpotDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,6 +31,10 @@ export default function SpotDetailScreen() {
     toggleSave,
     loading: favLoading,
   } = useFavouriteSpot(id);
+
+  const { userId } = useAuth();
+  const [reportOpen, setReportOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
     return (
@@ -41,23 +52,25 @@ export default function SpotDetailScreen() {
             headerBackTitle: "Spots",
             headerStyle: { backgroundColor: "#121212" },
             headerTintColor: "#fff",
+            headerRight: () => (
+              <TouchableOpacity onPress={() => setReportOpen(true)}>
+                <MaterialIcons
+                  name="report-gmailerrorred"
+                  size={26}
+                  color="#f95e58"
+                />
+              </TouchableOpacity>
+            ),
           }}
         />
-        <ActivityIndicator
-          size={"large"}
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        />
+        <ActivityIndicator size="large" />
       </ScrollView>
     );
   }
 
   if (error || !spot) {
     return (
-      <Text style={{ color: "white", padding: 16 }}>Błąd ładowania danych</Text>
+      <Text style={{ color: "white", padding: 16 }}>Error Loading Data</Text>
     );
   }
 
@@ -67,6 +80,24 @@ export default function SpotDetailScreen() {
     : 300;
 
   const handleOpenGoogleMaps = () => openInMaps(spot.latitude, spot.longitude);
+
+  const onReportPick = async (reason: string) => {
+    if (!spot || !userId) return;
+    try {
+      setSubmitting(true);
+      await reportSpot({
+        spotId: spot.id,
+        reporterId: userId,
+        reason,
+      });
+      Alert.alert("Thank you", "We will review this spot.");
+    } catch (e: any) {
+      Alert.alert("Error", e?.message ?? "Failed to send report");
+    } finally {
+      setSubmitting(false);
+      setReportOpen(false);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -84,7 +115,7 @@ export default function SpotDetailScreen() {
           source={{ uri: spot.image }}
           style={[styles.heroImage, { height: calculatedHeight }]}
           contentFit="cover"
-          transition={300}
+          transition={500}
         />
       ) : (
         <View
@@ -101,7 +132,7 @@ export default function SpotDetailScreen() {
         </Text>
         {!!likesCount && (
           <View style={styles.likesContainer}>
-            <Entypo name={"heart"} size={20} color="#f95e58" />
+            <Entypo name="heart" size={20} color="#f95e58" />
             <Text style={styles.likesCount}>{likesCount}</Text>
           </View>
         )}
@@ -138,25 +169,22 @@ export default function SpotDetailScreen() {
           style={styles.button}
         >
           <Text style={styles.buttonText}>Show on Photo Spots Maps</Text>
-          <Text>
-            <Entypo
-              name="direction"
-              size={24}
-              color="white"
-              style={{ marginLeft: 6 }}
-            />
-          </Text>
+          <Entypo
+            name="direction"
+            size={24}
+            color="white"
+            style={{ marginLeft: 6 }}
+          />
         </TouchableOpacity>
+
         <TouchableOpacity onPress={handleOpenGoogleMaps} style={styles.button}>
           <Text style={styles.buttonText}>Open Google Maps</Text>
-          <Text>
-            <Entypo
-              name="direction"
-              size={24}
-              color="white"
-              style={{ marginLeft: 6 }}
-            />
-          </Text>
+          <Entypo
+            name="direction"
+            size={24}
+            color="white"
+            style={{ marginLeft: 6 }}
+          />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -175,15 +203,17 @@ export default function SpotDetailScreen() {
           />
         </TouchableOpacity>
       </View>
+      <ReportModal
+        visible={reportOpen}
+        onClose={() => !submitting && setReportOpen(false)}
+        onPick={onReportPick}
+      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#121212",
-  },
+  container: { flex: 1, backgroundColor: "#121212" },
   heroImage: {
     width: "100%",
     height: 500,
@@ -209,7 +239,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1E1E1E",
     borderRadius: 18,
   },
-  avatar: { width: 44, height: 44, borderRadius: 22, marginRight: 12 },
   authorText: { fontSize: 14, color: "#aaa" },
   authorName: { fontWeight: "600", color: "#fff" },
   section: { paddingHorizontal: 16, marginTop: 20 },
@@ -234,9 +263,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "600",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     fontSize: 15,
   },
   tipsCard: {
