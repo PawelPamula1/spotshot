@@ -6,7 +6,6 @@ import {
 } from "@/lib/api/favourites";
 import { useAuth } from "@/provider/AuthProvider";
 import type { Spot } from "@/types/spot";
-import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 /** ---------- MINI EVENT BUS ---------- */
@@ -59,12 +58,6 @@ export function useFavourites(): UseFavouritesReturn {
   useEffect(() => {
     fetch();
   }, [fetch]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetch();
-    }, [fetch])
-  );
 
   useEffect(() => {
     return onFavouritesChange((e) => {
