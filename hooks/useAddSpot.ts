@@ -80,23 +80,21 @@ export function useAddSpot(opts: {
       setIsSubmitting(true);
       try {
         if (!photo) {
-          Alert.alert("Błąd", "Dodaj zdjęcie.");
+          Alert.alert("Error", "Add photo.");
           return;
         }
         if (!location) {
-          Alert.alert("Błąd", "Nie określono lokalizacji.");
+          Alert.alert("Error", "Location not found.");
           return;
         }
         if (!userId) {
-          Alert.alert("Błąd", "Musisz być zalogowany, aby dodać spot.");
+          Alert.alert("Error", "You need to be login to add spot.");
           return;
         }
 
         const { description, name, photo_tips } = data;
 
         const compressedUri = await compressImageForUpload(photo.uri);
-
-        console.log(compressedUri);
 
         const source = {
           uri: compressedUri,
@@ -119,13 +117,14 @@ export function useAddSpot(opts: {
           author_id: userId,
         };
 
-        await createSpot(newSpot);
+        const response = await createSpot(newSpot);
+        const spotId = response?.id || newSpot.id; // zależnie od tego co zwraca API
         Alert.alert("Success", "Spot added!");
         setPhoto(null);
-        router.push("/explore");
+        router.push(`/spot/${spotId}`);
       } catch (error: any) {
-        console.error("Błąd przy dodawaniu spotu:", error);
-        Alert.alert("Błąd", "Coś poszło nie tak. Spróbuj ponownie.");
+        console.error("Error adding spot", error);
+        Alert.alert("Error", "Failed to add spot. Please try again.");
       } finally {
         setIsSubmitting(false);
         submittingRef.current = false;

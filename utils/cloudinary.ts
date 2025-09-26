@@ -27,10 +27,8 @@ export const uploadToCloudinary = async (
 
     if (result.secure_url) return result.secure_url;
 
-    Alert.alert("Błąd podczas uploadu zdjęcia");
     return null;
   } catch (error) {
-    Alert.alert("Wystąpił błąd podczas przesyłania zdjęcia.");
     return null;
   }
 };
