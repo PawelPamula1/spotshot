@@ -127,9 +127,16 @@ export default function SpotDetailScreen() {
         <View>
           <Text style={styles.spotTitle}>{spot.name}</Text>
         </View>
-        <Text style={styles.spotLocation}>
-          {spot.city}, {spot.country}
-        </Text>
+        <View style={styles.spotLocationContainer}>
+          {spot.city && (
+            <Text style={[styles.spotLocation, { fontWeight: "bold" }]}>
+              {spot.city},{" "}
+            </Text>
+          )}
+
+          <Text style={styles.spotLocation}>{spot.country}</Text>
+        </View>
+
         {!!likesCount && (
           <View style={styles.likesContainer}>
             <Entypo name="heart" size={20} color="#f95e58" />
@@ -230,6 +237,10 @@ const styles = StyleSheet.create({
   likesCount: { color: "#fff", textAlign: "center", fontSize: 18 },
   spotTitle: { fontSize: 26, fontWeight: "700", color: "#fff" },
   spotLocation: { fontSize: 16, color: "#ccc", marginTop: 4 },
+  spotLocationContainer: {
+    flexDirection: "row",
+    marginTop: 4,
+  },
   authorCard: {
     flexDirection: "row",
     alignItems: "center",

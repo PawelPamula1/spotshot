@@ -6,7 +6,6 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Image as RNImage } from "react-native";
-import uuid from "react-native-uuid";
 
 export type AddSpotFormValues = {
   name: string;
@@ -105,7 +104,6 @@ export function useAddSpot(opts: {
         const imageUrl = await uploadToCloudinary(source);
 
         const newSpot = {
-          id: uuid.v4() as string,
           city,
           country,
           description,
@@ -118,7 +116,7 @@ export function useAddSpot(opts: {
         };
 
         const response = await createSpot(newSpot);
-        const spotId = response?.id || newSpot.id; // zależnie od tego co zwraca API
+        const spotId = response?.id; // zależnie od tego co zwraca API
         Alert.alert("Success", "Spot added!");
         setPhoto(null);
         router.push(`/spot/${spotId}`);
