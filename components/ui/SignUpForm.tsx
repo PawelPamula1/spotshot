@@ -35,7 +35,10 @@ export default function SignUpForm() {
         res.error;
       Alert.alert("Sign Up Failed", msg);
     } else {
-      Alert.alert("Success", "Account created and you're logged in!");
+      Alert.alert(
+        "Success",
+        "Account created! Please check your email to confirm your account."
+      );
     }
   };
 

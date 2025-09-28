@@ -147,7 +147,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsSigningUp(true);
     setLastError(null);
 
-    // Client-side validation centralized here
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const fieldErrors: FieldErrors<SignUpInput> = {};
     if (!email) fieldErrors.email = "Email is required";
@@ -169,19 +168,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { username } },
+        options: {
+          data: { username },
+          emailRedirectTo: "https://photospots.dev/en/confirmed",
+        },
       });
 
-      if (error || !data.session) {
-        const msg = error?.message || "Registration failed";
+      if (error) {
+        const msg = error.message || "Registration failed";
         setLastError(msg);
         return { ok: false, error: msg };
       }
 
-      const id = data.session.user.id;
-      setUserId(id);
-      await fetchProfile(id);
-      return { ok: true };
+      return {
+        ok: true,
+        message:
+          "Registration successful. Please check your email to confirm your account.",
+      };
     } catch (err: any) {
       const msg = err?.message || "Unknown error";
       setLastError(msg);
