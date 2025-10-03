@@ -34,7 +34,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="addspot"
+          name="addSpot"
           options={{
             title: "Add Spot",
             tabBarIcon: ({ color }) => (
