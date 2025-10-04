@@ -9,6 +9,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "config": {
+        "googleMapsApiKey": "process.env.EXPO_PUBLIC_NATIVE_GOOGLE_MAPS_API_KEY"
+      },
       "supportsTablet": true,
       "bundleIdentifier": "com.sancus.spotshot",
       "infoPlist": {
