@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "config": {
-        "googleMapsApiKey": "process.env.EXPO_PUBLIC_NATIVE_GOOGLE_MAPS_API_KEY"
+        "googleMapsApiKey": "AIzaSyA9q2rheHLUpiVxD5CSY7YiDkJgbksZbmE"
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.sancus.spotshot",
