@@ -123,6 +123,14 @@ export default function SpotDetailScreen() {
         />
       )}
 
+      {!spot.accepted && (
+        <View style={styles.pendingCard}>
+          <Text style={styles.pendingText}>
+            This spot is awaiting moderation before being visible to everyone.
+          </Text>
+        </View>
+      )}
+
       <View style={styles.imageInfo}>
         <View>
           <Text style={styles.spotTitle}>{spot.name}</Text>
@@ -226,6 +234,21 @@ const styles = StyleSheet.create({
     height: 500,
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
+  },
+  pendingCard: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: "#2a2a2a",
+    borderWidth: 1,
+    borderColor: "#f5c54233",
+  },
+  pendingText: {
+    color: "#f5c542",
+    fontSize: 14,
+    textAlign: "center",
+    fontWeight: "500",
   },
   imageInfo: { paddingHorizontal: 16, paddingTop: 12 },
   likesContainer: {

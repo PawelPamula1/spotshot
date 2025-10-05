@@ -1,5 +1,6 @@
 export interface Spot {
   id: string;
+  accepted: boolean;
   name: string;
   city: string;
   photo_tips: string;
