@@ -71,41 +71,6 @@ export default function AddSpotForm() {
           }}
         />
 
-        {photo && (
-          <Image
-            source={{ uri: photo.uri }}
-            contentFit="contain"
-            style={{
-              width: "100%",
-              height: calculatedHeight,
-              borderRadius: 12,
-              marginBottom: 20,
-            }}
-          />
-        )}
-
-        {location && (
-          <View style={styles.mapContainer}>
-            <MapView
-              style={{ flex: 1 }}
-              initialRegion={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              provider={PROVIDER_GOOGLE}
-              scrollEnabled={false}
-              zoomEnabled={false}
-              rotateEnabled={false}
-              pitchEnabled={false}
-              pointerEvents="none"
-            >
-              <Marker coordinate={location} />
-            </MapView>
-          </View>
-        )}
-
         {/* NAME */}
         <Text style={styles.label}>Name of the place</Text>
         <Controller
@@ -163,6 +128,41 @@ export default function AddSpotForm() {
         />
         {typeof errors.photo_tips?.message === "string" && (
           <Text style={styles.error}>{errors.photo_tips.message}</Text>
+        )}
+
+        {photo && (
+          <Image
+            source={{ uri: photo.uri }}
+            contentFit="contain"
+            style={{
+              width: "100%",
+              height: calculatedHeight,
+              borderRadius: 12,
+              marginBottom: 20,
+            }}
+          />
+        )}
+
+        {location && (
+          <View style={styles.mapContainer}>
+            <MapView
+              style={{ flex: 1 }}
+              initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              provider={PROVIDER_GOOGLE}
+              scrollEnabled={false}
+              zoomEnabled={false}
+              rotateEnabled={false}
+              pitchEnabled={false}
+              pointerEvents="none"
+            >
+              <Marker coordinate={location} />
+            </MapView>
+          </View>
         )}
 
         <TouchableOpacity
