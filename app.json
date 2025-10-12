@@ -37,7 +37,7 @@
         {
           "image": "./assets/icons/ios-light.png",
           "dark": {
-            "image": "./assets/icons/icon-dark.png",
+            "image": "./assets/icons/ios-dark.png",
             "backgroundColor": "#000000"
           },
           "imageWidth": 200,
