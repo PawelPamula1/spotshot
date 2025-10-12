@@ -5,6 +5,7 @@ import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
+import Toast from "react-native-root-toast";
 
 export default function PickLocationScreen() {
   const router = useRouter();
@@ -12,6 +13,24 @@ export default function PickLocationScreen() {
 
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const toast = Toast.show(
+      "Pick the photo location as precisely as possible",
+      {
+        duration: Toast.durations.LONG,
+        position: 50,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+        backgroundColor: "#1E1E1E",
+        textColor: "#fff",
+        opacity: 0.9,
+      }
+    );
+
+    return () => Toast.hide(toast);
+  }, []);
 
   useEffect(() => {
     const fetchUserLocation = async () => {

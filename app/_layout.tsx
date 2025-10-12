@@ -2,8 +2,8 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 // import "react-native-reanimated";
-
 import { AuthProvider } from "@/provider/AuthProvider";
+import { RootSiblingParent } from "react-native-root-siblings";
 
 function InitialLayout() {
   const [loaded] = useFonts({
@@ -34,8 +34,10 @@ function InitialLayout() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <InitialLayout />
-    </AuthProvider>
+    <RootSiblingParent>
+      <AuthProvider>
+        <InitialLayout />
+      </AuthProvider>
+    </RootSiblingParent>
   );
 }
