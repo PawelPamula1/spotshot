@@ -91,26 +91,6 @@ export default function AddSpotForm() {
           <Text style={styles.error}>{errors.name.message}</Text>
         )}
 
-        {/* DESCRIPTION */}
-        <Text style={styles.label}>Description</Text>
-        <Controller
-          control={control}
-          name="description"
-          rules={{ required: "Write description" }}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={[styles.input, { height: 100 }]}
-              placeholder="Description"
-              value={value}
-              onChangeText={onChange}
-              multiline
-            />
-          )}
-        />
-        {typeof errors.description?.message === "string" && (
-          <Text style={styles.error}>{errors.description.message}</Text>
-        )}
-
         {/* photo_tips */}
         <Text style={styles.label}>Instruction for taking photo</Text>
         <Controller
@@ -129,6 +109,25 @@ export default function AddSpotForm() {
         />
         {typeof errors.photo_tips?.message === "string" && (
           <Text style={styles.error}>{errors.photo_tips.message}</Text>
+        )}
+
+        {/* DESCRIPTION */}
+        <Text style={styles.label}>Description (optional)</Text>
+        <Controller
+          control={control}
+          name="description"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              placeholder="Description (optional)"
+              value={value}
+              onChangeText={onChange}
+              multiline
+            />
+          )}
+        />
+        {typeof errors.description?.message === "string" && (
+          <Text style={styles.error}>{errors.description.message}</Text>
         )}
 
         {photo && (

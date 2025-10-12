@@ -153,9 +153,11 @@ export default function SpotDetailScreen() {
         )}
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.description}>{spot.description}</Text>
-      </View>
+      {spot.description && (
+        <View style={styles.section}>
+          <Text style={styles.description}>{spot.description}</Text>
+        </View>
+      )}
 
       {author && (
         <View style={styles.authorCard}>
