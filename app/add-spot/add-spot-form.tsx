@@ -2,7 +2,7 @@ import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { AddSpotFormValues, useAddSpot } from "@/hooks/useAddSpot";
 import { useAuth } from "@/provider/AuthProvider";
 import { Image } from "expo-image";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -19,6 +19,7 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 export default function AddSpotForm() {
+  const router = useRouter();
   const { latitude, longitude } = useLocalSearchParams<{
     latitude: string;
     longitude: string;
@@ -170,7 +171,16 @@ export default function AddSpotForm() {
           onPress={pickImage}
           disabled={isSubmitting}
         >
-          <Text style={styles.imageButtonText}>🖼️ Upload Photo</Text>
+          <Text style={styles.imageButtonText}>
+            {photo ? "Change Photo" : "Upload Photo"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.back()} // wraca do ekranu poprzedniego, czyli wyboru lokalizacji
+        >
+          <Text style={styles.imageButtonText}>Change Location</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
