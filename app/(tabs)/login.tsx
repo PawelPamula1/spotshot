@@ -36,7 +36,7 @@ export default function AuthScreen() {
             {mode === "login" ? "Sign In" : "Create Account"}
           </Text>
 
-          {mode === "login" ? <SignInForm /> : <SignUpForm />}
+          {mode === "login" ? <SignInForm /> : <SignUpForm setMode={setMode} />}
 
           <TouchableOpacity
             onPress={() => setMode(mode === "login" ? "register" : "login")}

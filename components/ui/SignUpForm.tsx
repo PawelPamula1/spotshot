@@ -11,7 +11,11 @@ import {
   View,
 } from "react-native";
 
-export default function SignUpForm() {
+export default function SignUpForm({
+  setMode,
+}: {
+  setMode: (mode: "login" | "register") => void;
+}) {
   const { signUp, isSigningUp } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -37,7 +41,13 @@ export default function SignUpForm() {
     } else {
       Alert.alert(
         "Success",
-        "Account created! Please check your email to confirm your account."
+        "Account created! Please check your email to confirm your account.",
+        [
+          {
+            text: "OK",
+            onPress: () => setMode("login"),
+          },
+        ]
       );
     }
   };
