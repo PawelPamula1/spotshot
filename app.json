@@ -4,7 +4,7 @@
     "slug": "spotshot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icons/ios-dark.png",
     "scheme": "spotshot",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
