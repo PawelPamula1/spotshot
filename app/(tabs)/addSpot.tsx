@@ -1,6 +1,5 @@
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { MaterialIcons } from "@expo/vector-icons";
-import * as Location from "expo-location";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -34,23 +33,9 @@ export default function PickLocationScreen() {
 
   useEffect(() => {
     const fetchUserLocation = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.warn("Brak dostępu do lokalizacji, używam fallback");
-        setRegion({
-          latitude: 48.8566,
-          longitude: 2.3522,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-        setLoading(false);
-        return;
-      }
-
-      const current = await Location.getCurrentPositionAsync({});
       setRegion({
-        latitude: current.coords.latitude,
-        longitude: current.coords.longitude,
+        latitude: 48.8566,
+        longitude: 2.3522,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       });
