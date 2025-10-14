@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "PhotoSpots",
-    "slug": "photospots",
+    "slug": "spotshot",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icons/ios-dark.png",
-    "scheme": "photospots",
+    "scheme": "spotshot",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
