@@ -1,7 +1,10 @@
+import { Theme } from "@/constants/Theme";
 import { useAuth } from "@/provider/AuthProvider";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link, Redirect, Stack, useRouter } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
   FlatList,
   Image,
@@ -67,8 +70,19 @@ export default function Onboarding() {
   const listRef = useRef<FlatList<Slide>>(null);
   const [index, setIndex] = useState(0);
 
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const buttonScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: Theme.animation.slow,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const goToApp = useCallback(async () => {
-    router.replace("/(tabs)"); // lub np. /login
+    router.replace("/(tabs)");
   }, [router]);
 
   const handleNext = useCallback(() => {
@@ -85,129 +99,271 @@ export default function Onboarding() {
     if (i !== index) setIndex(i);
   };
 
+  const handlePressIn = () => {
+    Animated.spring(buttonScale, {
+      toValue: 0.96,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(buttonScale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={goToApp}>
-          <Text style={styles.skip}>Skip</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Decorative background elements */}
+      <View style={styles.decorativeCircle} />
+      <View style={[styles.decorativeCircle, styles.decorativeCircleBottom]} />
 
-      <FlatList
-        ref={listRef}
-        data={SLIDES}
-        keyExtractor={(s) => s.key}
-        renderItem={({ item }) => <SlideItem item={item} />}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-      />
-
-      <View style={styles.dots}>
-        {SLIDES.map((_, i) => (
-          <View key={i} style={[styles.dot, i === index && styles.dotActive]} />
-        ))}
-      </View>
-
-      <View style={styles.buttons}>
-        <Link href="/login" asChild>
-          <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.secondaryButtonText}>Log In</Text>
+      <Animated.View style={[styles.contentContainer, { opacity: fadeAnim }]}>
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={goToApp} style={styles.skipButton}>
+            <Text style={styles.skip}>Skip</Text>
           </TouchableOpacity>
-        </Link>
+        </View>
 
-        <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>
-          <Text style={styles.primaryButtonText}>
-            {index === SLIDES.length - 1 ? "Get Started" : "Next"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        <FlatList
+          ref={listRef}
+          data={SLIDES}
+          keyExtractor={(s) => s.key}
+          renderItem={({ item }) => <SlideItem item={item} />}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+        />
+
+        <View style={styles.dots}>
+          {SLIDES.map((_, i) => (
+            <Animated.View
+              key={i}
+              style={[
+                styles.dot,
+                i === index && styles.dotActive,
+              ]}
+            />
+          ))}
+        </View>
+
+        <View style={styles.buttons}>
+          <Link href="/(tabs)/login" asChild>
+            <TouchableOpacity style={styles.secondaryButton}>
+              <Text style={styles.secondaryButtonText}>Log In</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+            <TouchableOpacity
+              onPress={handleNext}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              activeOpacity={1}
+            >
+              <LinearGradient
+                colors={[Theme.colors.primary, Theme.colors.primaryDark]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.primaryButton}
+              >
+                <Text style={styles.primaryButtonText}>
+                  {index === SLIDES.length - 1 ? "Get Started" : "Next"}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        </View>
+      </Animated.View>
     </View>
   );
 }
 
 function SlideItem({ item }: { item: Slide }) {
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.spring(slideAnim, {
+      toValue: 1,
+      friction: 8,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <View style={[styles.slide, { width }]}>
-      <Image source={item.image} style={styles.image} resizeMode="contain" />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.subtitle}>{item.subtitle}</Text>
-    </View>
+    <Animated.View
+      style={[
+        styles.slide,
+        { width },
+        {
+          opacity: slideAnim,
+          transform: [
+            {
+              translateY: slideAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [50, 0],
+              }),
+            },
+          ],
+        },
+      ]}
+    >
+      <View style={styles.imageContainer}>
+        <Image source={item.image} style={styles.image} resizeMode="contain" />
+        <View style={styles.imageGlow} />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{item.title}</Text>
+        <View style={styles.titleUnderline} />
+        <Text style={styles.subtitle}>{item.subtitle}</Text>
+      </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#121212" },
+  container: {
+    flex: 1,
+    backgroundColor: Theme.colors.richBlack,
+  },
+  decorativeCircle: {
+    position: "absolute",
+    width: 350,
+    height: 350,
+    borderRadius: 175,
+    backgroundColor: Theme.colors.primary,
+    opacity: 0.06,
+    top: -150,
+    right: -100,
+  },
+  decorativeCircleBottom: {
+    top: undefined,
+    right: undefined,
+    bottom: -100,
+    left: -150,
+    backgroundColor: Theme.colors.electricBlue,
+  },
+  contentContainer: {
+    flex: 1,
+  },
   topBar: {
     position: "absolute",
     top: 60,
-    right: 24,
+    right: Theme.spacing.lg,
     zIndex: 10,
   },
-  skip: { color: "#bbb", fontSize: 16 },
+  skipButton: {
+    paddingHorizontal: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm,
+  },
+  skip: {
+    color: Theme.colors.primary,
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.semibold,
+  },
   slide: {
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: Theme.spacing.lg,
+  },
+  imageContainer: {
+    position: "relative",
+    marginBottom: Theme.spacing.xl,
   },
   image: {
-    width: width,
-    height: width * 1.1,
-    marginBottom: 16,
+    width: width * 0.85,
+    height: width * 1.0,
+    marginBottom: Theme.spacing.md,
+  },
+  imageGlow: {
+    position: "absolute",
+    bottom: 0,
+    left: "10%",
+    right: "10%",
+    height: 100,
+    backgroundColor: Theme.colors.primaryGlow,
+    opacity: 0.4,
+    borderRadius: 100,
+    transform: [{ scaleX: 1.5 }],
+  },
+  textContainer: {
+    alignItems: "center",
+    paddingHorizontal: Theme.spacing.md,
   },
   title: {
-    fontSize: 24,
-    color: "#fff",
-    fontWeight: "700",
+    fontSize: Theme.typography.sizes.h2,
+    color: Theme.colors.offWhite,
+    fontWeight: Theme.typography.weights.black,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: Theme.spacing.sm,
+  },
+  titleUnderline: {
+    width: 60,
+    height: 4,
+    backgroundColor: Theme.colors.primary,
+    borderRadius: 2,
+    marginBottom: Theme.spacing.md,
   },
   subtitle: {
-    fontSize: 15,
-    color: "#bbb",
+    fontSize: Theme.typography.sizes.body,
+    color: Theme.colors.textMuted,
     textAlign: "center",
-    lineHeight: 22,
-    paddingHorizontal: 12,
+    lineHeight: Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
+    paddingHorizontal: Theme.spacing.md,
+    fontWeight: Theme.typography.weights.medium,
   },
   dots: {
     flexDirection: "row",
     alignSelf: "center",
-    gap: 6,
-    marginBottom: 18,
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.lg,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: Theme.colors.slate,
   },
   dotActive: {
-    backgroundColor: "#6D5FFD",
-    width: 20,
+    backgroundColor: Theme.colors.primary,
+    width: 24,
   },
   buttons: {
-    paddingHorizontal: 24,
-    paddingBottom: 36,
-    gap: 12,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.xxxl,
+    gap: Theme.spacing.md,
   },
   primaryButton: {
-    backgroundColor: "#6D5FFD",
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: Theme.spacing.md + 2,
+    borderRadius: Theme.radius.lg,
     alignItems: "center",
+    justifyContent: "center",
+    ...Theme.shadows.medium,
   },
-  primaryButtonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  primaryButtonText: {
+    color: Theme.colors.offWhite,
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.bold,
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
+  },
   secondaryButton: {
-    backgroundColor: "#1F1F1F",
-    borderColor: "#333",
-    borderWidth: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
+    backgroundColor: Theme.colors.deepCharcoal,
+    borderColor: Theme.colors.slate,
+    borderWidth: 2,
+    paddingVertical: Theme.spacing.md,
+    borderRadius: Theme.radius.lg,
     alignItems: "center",
   },
-  secondaryButtonText: { color: "#ddd", fontSize: 16, fontWeight: "600" },
+  secondaryButtonText: {
+    color: Theme.colors.offWhite,
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.semibold,
+  },
 });

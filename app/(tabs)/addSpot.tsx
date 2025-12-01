@@ -1,10 +1,17 @@
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
+import { Theme } from "@/constants/Theme";
 import { MaterialIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
-import Toast from "react-native-root-toast";
 
 export default function PickLocationScreen() {
   const router = useRouter();
@@ -13,22 +20,29 @@ export default function PickLocationScreen() {
   const [region, setRegion] = useState<Region | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const toast = Toast.show(
-      "Pick the photo location as precisely as possible",
-      {
-        duration: Toast.durations.LONG,
-        position: 50,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        backgroundColor: "#1E1E1E",
-        textColor: "#fff",
-        opacity: 0.9,
-      }
-    );
+  const pulseAnim = useRef(new Animated.Value(1)).current;
 
-    return () => Toast.hide(toast);
+  useEffect(() => {
+    // Pulse animation for pin
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.2,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+
+    return () => {
+      pulse.stop();
+    };
   }, []);
 
   useEffect(() => {
@@ -72,11 +86,12 @@ export default function PickLocationScreen() {
           headerTitle: () => <HeaderLogo title="Pick Location" />,
           headerBackTitle: "Cancel",
           headerStyle: {
-            backgroundColor: "#121212",
+            backgroundColor: Theme.colors.richBlack,
           },
-          headerTintColor: "#fff",
+          headerTintColor: Theme.colors.offWhite,
         }}
       />
+
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -85,55 +100,147 @@ export default function PickLocationScreen() {
         onRegionChangeComplete={setRegion}
       />
 
-      <MaterialIcons
-        name="location-on"
-        size={48}
-        color="red"
-        style={styles.pin}
-      />
+      {/* Animated Pin */}
+      <Animated.View
+        style={[
+          styles.pinContainer,
+          {
+            transform: [{ scale: pulseAnim }],
+          },
+        ]}
+      >
+        <View style={styles.pinGlow} />
+        <MaterialIcons
+          name="location-on"
+          size={48}
+          color={Theme.colors.primary}
+          style={styles.pin}
+        />
+      </Animated.View>
 
-      <TouchableOpacity style={styles.button} onPress={handlePickLocation}>
-        <Text style={styles.buttonText}>Choose location</Text>
-      </TouchableOpacity>
+      {/* Info Card */}
+      <View style={styles.infoCard}>
+        <View style={styles.infoIconContainer}>
+          <MaterialIcons
+            name="info-outline"
+            size={20}
+            color={Theme.colors.primary}
+          />
+        </View>
+        <Text style={styles.infoText}>
+          Move the map to adjust the pin location
+        </Text>
+      </View>
+
+      {/* Action Button */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handlePickLocation}>
+          <LinearGradient
+            colors={[Theme.colors.primary, Theme.colors.primaryDark]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.button}
+          >
+            <MaterialIcons
+              name="check-circle"
+              size={24}
+              color={Theme.colors.offWhite}
+            />
+            <Text style={styles.buttonText}>Confirm Location</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, marginTop: 12 },
+  container: {
+    flex: 1,
+    backgroundColor: Theme.colors.richBlack,
+  },
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: Theme.colors.richBlack,
   },
-  map: { flex: 1 },
-  pin: {
+  map: {
+    flex: 1,
+  },
+  pinContainer: {
     position: "absolute",
     top: "50%",
     left: "50%",
-    marginLeft: -16,
-    marginTop: -32,
+    marginLeft: -24,
+    marginTop: -48,
     zIndex: 10,
-  },
-
-  button: {
-    position: "absolute",
-    paddingVertical: 13,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    borderWidth: 1,
-    bottom: 120,
-    left: 20,
-    right: 20,
-    borderColor: "#b3b1b1",
-    backgroundColor: "#1E1E1E",
     alignItems: "center",
-    flexDirection: "row",
     justifyContent: "center",
   },
+  pinGlow: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Theme.colors.primaryGlow,
+    opacity: 0.4,
+  },
+  pin: {
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  infoCard: {
+    position: "absolute",
+    top: Theme.spacing.lg,
+    left: Theme.spacing.md,
+    right: Theme.spacing.md,
+    backgroundColor: Theme.colors.deepCharcoal,
+    borderRadius: Theme.radius.lg,
+    padding: Theme.spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.sm,
+    ...Theme.shadows.soft,
+    borderWidth: 1,
+    borderColor: Theme.colors.slate,
+  },
+  infoIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Theme.colors.darkNavy,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoText: {
+    flex: 1,
+    fontSize: Theme.typography.sizes.bodySmall,
+    color: Theme.colors.textMuted,
+    fontWeight: Theme.typography.weights.medium,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 120,
+    left: Theme.spacing.md,
+    right: Theme.spacing.md,
+  },
+  button: {
+    paddingVertical: Theme.spacing.md + 4,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.radius.lg,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Theme.spacing.sm,
+    ...Theme.shadows.strong,
+  },
   buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
+    color: Theme.colors.offWhite,
+    fontWeight: Theme.typography.weights.bold,
+    fontSize: Theme.typography.sizes.body,
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
   },
 });

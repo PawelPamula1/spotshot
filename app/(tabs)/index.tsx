@@ -1,3 +1,4 @@
+import { Theme } from "@/constants/Theme";
 import { useSpots } from "@/hooks/useSpots";
 import { useAuth } from "@/provider/AuthProvider";
 import type { Spot } from "@/types/spot";
@@ -95,17 +96,31 @@ export default function SpotsScreen() {
               onPress={() =>
                 isAuthenticated
                   ? router.push(`/spot/${spot.id}`)
-                  : router.push("/login")
+                  : router.push("/(tabs)/login")
               }
             >
               <View style={styles.callout}>
-                <Image
-                  source={{ uri: spot.image }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-                <Text style={styles.name}>{spot.name}</Text>
-                <Text style={styles.city}>{spot.city}</Text>
+                {/* Film border for callout */}
+                <View style={styles.filmBorder}>
+                  <View style={styles.cornerMarker} />
+                  <View style={[styles.cornerMarker, styles.cornerTopRight]} />
+
+                  <Image
+                    source={{ uri: spot.image }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                </View>
+
+                <View style={styles.textContainer}>
+                  <View style={styles.locationBadge}>
+                    <Text style={styles.city}>{spot.city}</Text>
+                  </View>
+                  <Text style={styles.name} numberOfLines={2}>
+                    {spot.name}
+                  </Text>
+                  <View style={styles.accentLine} />
+                </View>
               </View>
             </Callout>
           </Marker>
@@ -123,28 +138,72 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: Theme.colors.richBlack,
   },
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   },
   callout: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 8,
-    width: 160,
+    backgroundColor: Theme.colors.deepCharcoal,
+    borderRadius: Theme.radius.lg,
+    overflow: "hidden",
+    width: 200,
+    ...Theme.shadows.strong,
+  },
+  filmBorder: {
+    position: "relative",
+  },
+  cornerMarker: {
+    position: "absolute",
+    width: 8,
+    height: 8,
+    backgroundColor: Theme.colors.primary,
+    zIndex: 2,
+    top: 0,
+    left: 0,
+    borderRadius: 2,
+  },
+  cornerTopRight: {
+    left: undefined,
+    right: 0,
   },
   image: {
     width: "100%",
-    height: 100,
-    borderRadius: 6,
+    height: 120,
+    backgroundColor: Theme.colors.slate,
   },
-  name: {
-    marginTop: 6,
-    fontWeight: "bold",
-    flexWrap: "wrap",
+  textContainer: {
+    padding: Theme.spacing.md,
+    gap: Theme.spacing.xs,
+  },
+  locationBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: 3,
+    backgroundColor: Theme.colors.primary,
+    borderRadius: Theme.radius.sm,
+    marginBottom: 2,
   },
   city: {
-    color: "#888",
+    fontSize: 9,
+    color: Theme.colors.offWhite,
+    fontWeight: Theme.typography.weights.bold,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  name: {
+    fontSize: Theme.typography.sizes.bodySmall,
+    fontWeight: Theme.typography.weights.semibold,
+    lineHeight:
+      Theme.typography.sizes.bodySmall * Theme.typography.lineHeights.tight,
+    color: Theme.colors.textLight,
+  },
+  accentLine: {
+    width: 30,
+    height: 3,
+    backgroundColor: Theme.colors.primary,
+    marginTop: 4,
+    borderRadius: 2,
   },
 });

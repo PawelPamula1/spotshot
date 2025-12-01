@@ -1,11 +1,15 @@
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
+import { Theme } from "@/constants/Theme";
 import { AddSpotFormValues, useAddSpot } from "@/hooks/useAddSpot";
 import { useAuth } from "@/provider/AuthProvider";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Animated,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
@@ -52,192 +56,454 @@ export default function AddSpotForm() {
     ? screenWidth * (photoDimensions.height / photoDimensions.width)
     : 300;
 
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: Theme.animation.normal,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.wrapper}
     >
-      <ScrollView
+      <Stack.Screen
+        options={{
+          headerTitle: () => <HeaderLogo title="Add Spot" />,
+          headerStyle: { backgroundColor: Theme.colors.richBlack },
+          headerTintColor: Theme.colors.offWhite,
+          headerBackTitle: "Cancel",
+        }}
+      />
+
+      <Animated.ScrollView
         style={styles.container}
         contentContainerStyle={styles.inner}
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <Stack.Screen
-          options={{
-            headerTitle: () => <HeaderLogo title="Add Spot" />,
-            headerStyle: { backgroundColor: "#121212" },
-            headerTintColor: "#fff",
-            headerBackTitle: "Cancel",
-          }}
-        />
-
-        {/* NAME */}
-        <Text style={styles.label}>Name of the place</Text>
-        <Controller
-          control={control}
-          name="name"
-          rules={{ required: "Write name of the place" }}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              placeholder="Name"
-              value={value}
-              onChangeText={onChange}
+        <Animated.View style={{ opacity: fadeAnim }}>
+          {/* Section Header */}
+          <View style={styles.sectionHeader}>
+            <MaterialIcons
+              name="photo-camera"
+              size={28}
+              color={Theme.colors.primary}
             />
-          )}
-        />
-        {typeof errors.name?.message === "string" && (
-          <Text style={styles.error}>{errors.name.message}</Text>
-        )}
-
-        {/* photo_tips */}
-        <Text style={styles.label}>Instruction for taking photo</Text>
-        <Controller
-          control={control}
-          name="photo_tips"
-          rules={{ required: "Write instructions" }}
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={[styles.input, { height: 100 }]}
-              placeholder="Write your instructions"
-              value={value}
-              onChangeText={onChange}
-              multiline
-            />
-          )}
-        />
-        {typeof errors.photo_tips?.message === "string" && (
-          <Text style={styles.error}>{errors.photo_tips.message}</Text>
-        )}
-
-        {/* DESCRIPTION */}
-        <Text style={styles.label}>Description (optional)</Text>
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={[styles.input, { height: 100 }]}
-              placeholder="Description (optional)"
-              value={value}
-              onChangeText={onChange}
-              multiline
-            />
-          )}
-        />
-        {typeof errors.description?.message === "string" && (
-          <Text style={styles.error}>{errors.description.message}</Text>
-        )}
-
-        {photo && (
-          <Image
-            source={{ uri: photo.uri }}
-            contentFit="contain"
-            style={{
-              width: "100%",
-              height: calculatedHeight,
-              borderRadius: 12,
-              marginBottom: 20,
-            }}
-          />
-        )}
-
-        {location && (
-          <View style={styles.mapContainer}>
-            <MapView
-              style={{ flex: 1 }}
-              initialRegion={{
-                latitude: location.latitude,
-                longitude: location.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              provider={PROVIDER_GOOGLE}
-              scrollEnabled={false}
-              zoomEnabled={false}
-              rotateEnabled={false}
-              pitchEnabled={false}
-              pointerEvents="none"
-            >
-              <Marker coordinate={location} />
-            </MapView>
+            <Text style={styles.sectionTitle}>Spot Details</Text>
           </View>
-        )}
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={pickImage}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.imageButtonText}>
-            {photo ? "Change Photo" : "Upload Photo"}
-          </Text>
-        </TouchableOpacity>
+          {/* NAME */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Place Name *</Text>
+            <Controller
+              control={control}
+              name="name"
+              rules={{ required: "Place name is required" }}
+              render={({ field: { onChange, value } }) => (
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    focusedField === "name" && styles.inputWrapperFocused,
+                    errors.name && styles.inputWrapperError,
+                  ]}
+                >
+                  <TextInput
+                    style={styles.input}
+                    placeholder="e.g. Eiffel Tower Viewpoint"
+                    placeholderTextColor={Theme.colors.textMuted}
+                    value={value}
+                    onChangeText={onChange}
+                    onFocus={() => setFocusedField("name")}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </View>
+              )}
+            />
+            {typeof errors.name?.message === "string" && (
+              <View style={styles.errorContainer}>
+                <MaterialIcons
+                  name="error-outline"
+                  size={16}
+                  color={Theme.colors.error}
+                />
+                <Text style={styles.error}>{errors.name.message}</Text>
+              </View>
+            )}
+          </View>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.back()} // wraca do ekranu poprzedniego, czyli wyboru lokalizacji
-        >
-          <Text style={styles.imageButtonText}>Change Location</Text>
-        </TouchableOpacity>
+          {/* PHOTO TIPS */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Photography Tips *</Text>
+            <Controller
+              control={control}
+              name="photo_tips"
+              rules={{ required: "Photography tips are required" }}
+              render={({ field: { onChange, value } }) => (
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    focusedField === "photo_tips" && styles.inputWrapperFocused,
+                    errors.photo_tips && styles.inputWrapperError,
+                  ]}
+                >
+                  <TextInput
+                    style={[styles.input, styles.textArea]}
+                    placeholder="Share tips for getting the best shot..."
+                    placeholderTextColor={Theme.colors.textMuted}
+                    value={value}
+                    onChangeText={onChange}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    onFocus={() => setFocusedField("photo_tips")}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </View>
+              )}
+            />
+            {typeof errors.photo_tips?.message === "string" && (
+              <View style={styles.errorContainer}>
+                <MaterialIcons
+                  name="error-outline"
+                  size={16}
+                  color={Theme.colors.error}
+                />
+                <Text style={styles.error}>{errors.photo_tips.message}</Text>
+              </View>
+            )}
+          </View>
 
-        <TouchableOpacity
-          style={[styles.submitButton, isSubmitting && { opacity: 0.6 }]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.submitButtonText}>
-            {isSubmitting ? "Adding..." : "➕ Add Spot"}
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+          {/* DESCRIPTION */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Description (Optional)</Text>
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, value } }) => (
+                <View
+                  style={[
+                    styles.inputWrapper,
+                    focusedField === "description" &&
+                      styles.inputWrapperFocused,
+                  ]}
+                >
+                  <TextInput
+                    style={[styles.input, styles.textArea]}
+                    placeholder="Describe the location..."
+                    placeholderTextColor={Theme.colors.textMuted}
+                    value={value}
+                    onChangeText={onChange}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    onFocus={() => setFocusedField("description")}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </View>
+              )}
+            />
+          </View>
+
+          {/* Photo Preview */}
+          {photo && (
+            <View style={styles.photoSection}>
+              <View style={styles.photoLabelContainer}>
+                <MaterialIcons
+                  name="image"
+                  size={20}
+                  color={Theme.colors.primary}
+                />
+                <Text style={styles.photoLabel}>Selected Photo</Text>
+              </View>
+              <View style={styles.photoContainer}>
+                <Image
+                  source={{ uri: photo.uri }}
+                  contentFit="cover"
+                  style={{
+                    width: "100%",
+                    height: calculatedHeight,
+                    borderRadius: Theme.radius.lg,
+                  }}
+                />
+                <View style={styles.photoOverlay} />
+              </View>
+            </View>
+          )}
+
+          {/* Map Preview */}
+          {location && (
+            <View style={styles.mapSection}>
+              <View style={styles.mapLabelContainer}>
+                <MaterialIcons
+                  name="location-on"
+                  size={20}
+                  color={Theme.colors.primary}
+                />
+                <Text style={styles.mapLabel}>Selected Location</Text>
+              </View>
+              <View style={styles.mapContainer}>
+                <MapView
+                  style={styles.map}
+                  initialRegion={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                  provider={PROVIDER_GOOGLE}
+                  scrollEnabled={false}
+                  zoomEnabled={false}
+                  rotateEnabled={false}
+                  pitchEnabled={false}
+                  pointerEvents="none"
+                >
+                  <Marker
+                    coordinate={location}
+                    pinColor={Theme.colors.primary}
+                  />
+                </MapView>
+              </View>
+            </View>
+          )}
+
+          {/* Action Buttons */}
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={pickImage}
+              disabled={isSubmitting}
+            >
+              <MaterialIcons
+                name={photo ? "edit" : "add-photo-alternate"}
+                size={20}
+                color={Theme.colors.primary}
+              />
+              <Text style={styles.secondaryButtonText}>
+                {photo ? "Change Photo" : "Upload Photo"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={() => router.back()}
+              disabled={isSubmitting}
+            >
+              <MaterialIcons
+                name="edit-location"
+                size={20}
+                color={Theme.colors.primary}
+              />
+              <Text style={styles.secondaryButtonText}>Change Location</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Submit Button */}
+          <TouchableOpacity
+            onPress={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
+            activeOpacity={0.9}
+          >
+            <LinearGradient
+              colors={[Theme.colors.primary, Theme.colors.primaryDark]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[
+                styles.submitButton,
+                isSubmitting && styles.submitButtonDisabled,
+              ]}
+            >
+              {isSubmitting ? (
+                <>
+                  <MaterialIcons
+                    name="hourglass-empty"
+                    size={24}
+                    color={Theme.colors.offWhite}
+                  />
+                  <Text style={styles.submitButtonText}>Adding Spot...</Text>
+                </>
+              ) : (
+                <>
+                  <MaterialIcons
+                    name="add-location"
+                    size={24}
+                    color={Theme.colors.offWhite}
+                  />
+                  <Text style={styles.submitButtonText}>Add Spot</Text>
+                </>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
+      </Animated.ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1, backgroundColor: "#121212" },
-  container: { flex: 1, backgroundColor: "#0D0D0D" },
-  inner: { padding: 20 },
-  label: { fontWeight: "600", fontSize: 16, marginBottom: 6, color: "#fff" },
-  error: { color: "#f87171", marginBottom: 10, fontSize: 13 },
+  wrapper: {
+    flex: 1,
+    backgroundColor: Theme.colors.richBlack,
+  },
+  container: {
+    flex: 1,
+  },
+  inner: {
+    padding: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.xxxl,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.md,
+    marginBottom: Theme.spacing.xl,
+  },
+  sectionTitle: {
+    fontSize: Theme.typography.sizes.h2,
+    fontWeight: Theme.typography.weights.black,
+    color: Theme.colors.offWhite,
+  },
+  fieldGroup: {
+    marginBottom: Theme.spacing.lg,
+  },
+  label: {
+    fontSize: Theme.typography.sizes.bodySmall,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.offWhite,
+    marginBottom: Theme.spacing.sm,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  inputWrapper: {
+    backgroundColor: Theme.colors.darkNavy,
+    borderRadius: Theme.radius.md,
+    borderWidth: 2,
+    borderColor: Theme.colors.slate,
+  },
+  inputWrapperFocused: {
+    borderColor: Theme.colors.primary,
+    ...Theme.shadows.soft,
+  },
+  inputWrapperError: {
+    borderColor: Theme.colors.error,
+  },
   input: {
-    backgroundColor: "#1A1A1A",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 15,
-    borderWidth: 1,
-    borderColor: "#333",
-    color: "#fff",
-    marginBottom: 20,
+    padding: Theme.spacing.md,
+    fontSize: Theme.typography.sizes.body,
+    color: Theme.colors.textLight,
+    fontWeight: Theme.typography.weights.medium,
+  },
+  textArea: {
+    height: 120,
+    textAlignVertical: "top",
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.xs,
+    marginTop: Theme.spacing.sm,
+  },
+  error: {
+    color: Theme.colors.error,
+    fontSize: Theme.typography.sizes.caption,
+    fontWeight: Theme.typography.weights.medium,
+  },
+  photoSection: {
+    marginBottom: Theme.spacing.xl,
+  },
+  photoLabelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.md,
+  },
+  photoLabel: {
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.offWhite,
+  },
+  photoContainer: {
+    borderRadius: Theme.radius.lg,
+    overflow: "hidden",
+    position: "relative",
+    borderWidth: 2,
+    borderColor: Theme.colors.primary,
+  },
+  photoOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Theme.colors.primaryGlow,
+    opacity: 0.1,
+  },
+  mapSection: {
+    marginBottom: Theme.spacing.xl,
+  },
+  mapLabelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.md,
+  },
+  mapLabel: {
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.offWhite,
   },
   mapContainer: {
-    height: 180,
-    borderRadius: 12,
+    height: 200,
+    borderRadius: Theme.radius.lg,
     overflow: "hidden",
-    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: Theme.colors.primary,
+    ...Theme.shadows.soft,
   },
-  button: {
-    paddingVertical: 13,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#3c3b3b",
-    backgroundColor: "#1E1E1E",
-    alignItems: "center",
+  map: {
+    flex: 1,
+  },
+  actionButtons: {
+    gap: Theme.spacing.md,
+    marginBottom: Theme.spacing.xl,
+  },
+  secondaryButton: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 12,
-  },
-  imageButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-  submitButton: {
-    backgroundColor: "#10B981",
-    padding: 16,
-    borderRadius: 8,
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "center",
+    gap: Theme.spacing.sm,
+    backgroundColor: Theme.colors.deepCharcoal,
+    borderWidth: 2,
+    borderColor: Theme.colors.slate,
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.radius.lg,
   },
-  submitButtonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  secondaryButtonText: {
+    color: Theme.colors.offWhite,
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  submitButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Theme.spacing.sm,
+    paddingVertical: Theme.spacing.md + 4,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.radius.lg,
+    ...Theme.shadows.strong,
+  },
+  submitButtonDisabled: {
+    opacity: 0.6,
+  },
+  submitButtonText: {
+    color: Theme.colors.offWhite,
+    fontSize: Theme.typography.sizes.body,
+    fontWeight: Theme.typography.weights.bold,
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
+  },
 });

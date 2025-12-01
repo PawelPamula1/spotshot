@@ -3,6 +3,7 @@ import React from "react";
 import { Platform } from "react-native";
 
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
+import { Theme } from "@/constants/Theme";
 import { useAuth } from "@/provider/AuthProvider";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -12,14 +13,21 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#6D5FFD",
+        tabBarActiveTintColor: Theme.colors.primary,
+        tabBarInactiveTintColor: Theme.colors.textMuted,
         headerShown: true,
         tabBarStyle: Platform.select({
           ios: {
-            backgroundColor: "#000",
+            backgroundColor: Theme.colors.richBlack,
             position: "absolute",
+            borderTopWidth: 1,
+            borderTopColor: Theme.colors.slate,
           },
-          default: {},
+          default: {
+            backgroundColor: Theme.colors.richBlack,
+            borderTopWidth: 1,
+            borderTopColor: Theme.colors.slate,
+          },
         }),
       }}
     >
@@ -49,9 +57,9 @@ export default function TabLayout() {
           title: "Spots",
           headerTitle: () => <HeaderLogo title="PhotoSpots" />,
           headerStyle: {
-            backgroundColor: "#121212",
+            backgroundColor: Theme.colors.richBlack,
           },
-          headerTintColor: "#fff",
+          headerTintColor: Theme.colors.offWhite,
           tabBarIcon: ({ color }) => (
             <MaterialIcons name="map" size={24} color={color} />
           ),

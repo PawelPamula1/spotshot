@@ -1,5 +1,6 @@
 import { HeaderLogo } from "@/components/ui/HeaderLogo";
 import { SpotGrid } from "@/components/ui/SpotGrid";
+import { Theme } from "@/constants/Theme";
 import { useFavourites } from "@/hooks/useFavourites";
 import { router, Stack } from "expo-router";
 import React from "react";
@@ -21,8 +22,8 @@ export default function Saved() {
       <Stack.Screen
         options={{
           headerTitle: () => <HeaderLogo title="Saved Spots" />,
-          headerStyle: { backgroundColor: "#121212" },
-          headerTintColor: "#fff",
+          headerStyle: { backgroundColor: Theme.colors.richBlack },
+          headerTintColor: Theme.colors.offWhite,
         }}
       />
 
@@ -52,38 +53,36 @@ export default function Saved() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
-    paddingTop: 20,
+    backgroundColor: Theme.colors.richBlack,
+    paddingTop: Theme.spacing.lg,
   },
   empty: {
-    color: "#aaa",
+    color: Theme.colors.textMuted,
     textAlign: "center",
     marginTop: 100,
-    fontSize: 16,
+    fontSize: Theme.typography.sizes.body,
+    lineHeight: Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
   },
   textContainer: {
-    marginTop: 28,
-    marginBottom: 38,
-    marginHorizontal: 16,
-    gap: 12,
+    marginTop: Theme.spacing.xl,
+    marginBottom: Theme.spacing.xxl,
+    marginHorizontal: Theme.spacing.md,
+    gap: Theme.spacing.md,
   },
   button: {
-    paddingVertical: 13,
-    paddingHorizontal: 18,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#3c3b3b",
-    backgroundColor: "#1E1E1E",
+    backgroundColor: Theme.colors.primary,
+    paddingVertical: Theme.spacing.md + 2,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.radius.md,
     alignItems: "center",
-    flexDirection: "row",
     justifyContent: "center",
+    ...Theme.shadows.soft,
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: 15,
+    color: Theme.colors.offWhite,
+    fontWeight: Theme.typography.weights.bold,
+    fontSize: Theme.typography.sizes.body,
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
   },
 });
