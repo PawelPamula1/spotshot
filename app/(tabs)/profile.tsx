@@ -10,6 +10,7 @@ import { router, Stack } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   ScrollView,
   StyleSheet,
@@ -19,7 +20,7 @@ import {
 } from "react-native";
 
 export default function Profile() {
-  const { signOut, userId, profile } = useAuth();
+  const { signOut, userId, profile, deleteAccount } = useAuth(); // 👈 DODANE deleteAccount
   const { favourites, loading: favLoading } = useFavourites();
   const { count: userSpotsCount, loading: spotsCountLoading } =
     useUserSpotsCount(userId);
@@ -44,6 +45,31 @@ export default function Profile() {
 
   const favPreview = favourites.slice(0, 3);
   const anyLoading = favLoading || spotsCountLoading;
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "This will permanently remove your account and all photo spots you've added. This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const res = await deleteAccount();
+            if (res.ok) {
+              Alert.alert(
+                "Account deleted",
+                "Your account has been permanently removed."
+              );
+            } else {
+              Alert.alert("Error", res.error || "Failed to delete account.");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -177,11 +203,27 @@ export default function Profile() {
                 <MaterialIcons
                   name="logout"
                   size={20}
+                  color={Theme.colors.primary}
+                />
+              </View>
+              <Text style={styles.settingText}>Sign Out</Text>
+            </TouchableOpacity>
+
+            <View style={styles.settingDivider} />
+
+            <TouchableOpacity
+              onPress={handleDeleteAccount}
+              style={styles.settingItem}
+            >
+              <View style={styles.settingIconContainer}>
+                <MaterialIcons
+                  name="delete-forever"
+                  size={20}
                   color={Theme.colors.error}
                 />
               </View>
               <Text style={[styles.settingText, { color: Theme.colors.error }]}>
-                Sign Out
+                Delete Account
               </Text>
             </TouchableOpacity>
           </View>
@@ -311,7 +353,7 @@ const styles = StyleSheet.create({
   settingsCard: {
     backgroundColor: Theme.colors.deepCharcoal,
     borderRadius: Theme.radius.lg,
-    padding: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.md,
     borderWidth: 1,
     borderColor: Theme.colors.slate,
   },

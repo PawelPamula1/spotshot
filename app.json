@@ -15,7 +15,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.sancus.spotshot",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "SpotShot uses your location to center the map on your current position and show nearby photo spots around you (e.g. popular viewpoints in your area)."
       }
     },
     "android": {

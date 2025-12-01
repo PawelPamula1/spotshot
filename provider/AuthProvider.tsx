@@ -1,4 +1,4 @@
-import { getUserById } from "@/lib/api/users";
+import { deleteUserAccount, getUserById } from "@/lib/api/users";
 import { supabase } from "@/lib/supabase";
 import React, {
   createContext,
@@ -39,6 +39,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<AuthActionResult>;
   refreshProfile: () => Promise<void>;
+  deleteAccount: () => Promise<AuthActionResult>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -54,6 +55,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   requestPasswordReset: async () => ({ ok: false, error: "not implemented" }),
   refreshProfile: async () => {},
+  deleteAccount: async () => ({ ok: false, error: "not implemented" }),
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -216,6 +218,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setProfile(null);
   };
 
+  const deleteAccount: AuthContextType["deleteAccount"] = async () => {
+    if (!userId) {
+      return {
+        ok: false,
+        error: "You must be logged in to delete your account.",
+      };
+    }
+
+    try {
+      setLastError(null);
+
+      await deleteUserAccount(userId);
+
+      // wyloguj lokalnie i po stronie Supabase
+      await supabase.auth.signOut();
+      setUserId(null);
+      setProfile(null);
+
+      return { ok: true };
+    } catch (err: any) {
+      console.error("Failed to delete account:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to delete account. Please try again.";
+      setLastError(msg);
+      return { ok: false, error: msg };
+    }
+  };
+
   const value = useMemo<AuthContextType>(
     () => ({
       isAuthenticated,
@@ -230,6 +262,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signOut,
       requestPasswordReset,
       refreshProfile,
+      deleteAccount,
     }),
     [
       isAuthenticated,
@@ -239,6 +272,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       isSigningIn,
       isSigningUp,
       lastError,
+      deleteAccount,
     ]
   );
 
