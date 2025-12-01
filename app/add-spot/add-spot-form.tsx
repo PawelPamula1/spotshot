@@ -57,7 +57,6 @@ export default function AddSpotForm() {
     : 300;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -110,7 +109,6 @@ export default function AddSpotForm() {
                 <View
                   style={[
                     styles.inputWrapper,
-                    focusedField === "name" && styles.inputWrapperFocused,
                     errors.name && styles.inputWrapperError,
                   ]}
                 >
@@ -120,8 +118,6 @@ export default function AddSpotForm() {
                     placeholderTextColor={Theme.colors.textMuted}
                     value={value}
                     onChangeText={onChange}
-                    onFocus={() => setFocusedField("name")}
-                    onBlur={() => setFocusedField(null)}
                   />
                 </View>
               )}
@@ -149,7 +145,6 @@ export default function AddSpotForm() {
                 <View
                   style={[
                     styles.inputWrapper,
-                    focusedField === "photo_tips" && styles.inputWrapperFocused,
                     errors.photo_tips && styles.inputWrapperError,
                   ]}
                 >
@@ -162,8 +157,6 @@ export default function AddSpotForm() {
                     multiline
                     numberOfLines={4}
                     textAlignVertical="top"
-                    onFocus={() => setFocusedField("photo_tips")}
-                    onBlur={() => setFocusedField(null)}
                   />
                 </View>
               )}
@@ -187,13 +180,7 @@ export default function AddSpotForm() {
               control={control}
               name="description"
               render={({ field: { onChange, value } }) => (
-                <View
-                  style={[
-                    styles.inputWrapper,
-                    focusedField === "description" &&
-                      styles.inputWrapperFocused,
-                  ]}
-                >
+                <View style={styles.inputWrapper}>
                   <TextInput
                     style={[styles.input, styles.textArea]}
                     placeholder="Describe the location..."
@@ -203,8 +190,6 @@ export default function AddSpotForm() {
                     multiline
                     numberOfLines={4}
                     textAlignVertical="top"
-                    onFocus={() => setFocusedField("description")}
-                    onBlur={() => setFocusedField(null)}
                   />
                 </View>
               )}
@@ -385,10 +370,6 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radius.md,
     borderWidth: 2,
     borderColor: Theme.colors.slate,
-  },
-  inputWrapperFocused: {
-    borderColor: Theme.colors.primary,
-    ...Theme.shadows.soft,
   },
   inputWrapperError: {
     borderColor: Theme.colors.error,
