@@ -32,7 +32,7 @@ export default function AboutAppScreen() {
             style={styles.logo}
             contentFit="contain"
           />
-          <Text style={styles.title}>SpotShot — Find & Save Photo Spots</Text>
+          <Text style={styles.title}>PhotoSpots — Find & Save Photo Spots</Text>
           <Text style={styles.subtitle}>
             Discover photography spots, save your favorites, and plan your shots
             — all in one app.
@@ -42,7 +42,7 @@ export default function AboutAppScreen() {
         {/* WHY THIS APP */}
         <Section title="Why this app exists">
           <Text style={styles.paragraph}>
-            SpotShot was born out of a simple problem: while traveling, it was
+            PhotoSpots was born out of a simple problem: while traveling, it was
             hard to find the exact locations where the best shots are taken. I
             wanted a map of real photo spots with real photos and practical tips
             — not just generic attractions. That’s where the idea for a
@@ -70,19 +70,19 @@ export default function AboutAppScreen() {
             years I’ve worked on large production mobile apps (including in the
             betting domain), and in my spare time I’ve been building my own
             projects. On the road I often missed a reliable list of exact places
-            to capture specific frames — so I built SpotShot. It fuses my love
+            to capture specific frames — so I built PhotoSpots. It fuses my love
             for coding with my passion for discovering new locations.
           </Text>
           <Text style={styles.paragraph}>
-            My goal with SpotShot was simplicity: quick map search, real example
-            photos, a short description, and practical tips from the author
-            (sunrise vs. sunset, focal length, framing, how to get there). Add
-            favorites and it becomes easy to plan your next shoot.
+            My goal with PhotoSpots was simplicity: quick map search, real
+            example photos, a short description, and practical tips from the
+            author (sunrise vs. sunset, focal length, framing, how to get
+            there). Add favorites and it becomes easy to plan your next shoot.
           </Text>
         </Section>
 
         {/* FEATURES */}
-        <Section title="What SpotShot can do">
+        <Section title="What PhotoSpots can do">
           <Bullet>🌍 Interactive map with geotagged photo locations</Bullet>
           <Bullet>📸 Real photos + author tips (when and how to shoot)</Bullet>
           <Bullet>🔎 Search and filter by country/city</Bullet>
@@ -105,7 +105,7 @@ export default function AboutAppScreen() {
         <Section title="Want to help?">
           <Text style={styles.paragraph}>
             Have ideas for new features or want to help build the community?
-            Reach out — every bit of feedback helps make SpotShot better.
+            Reach out — every bit of feedback helps make PhotoSpots better.
           </Text>
 
           <View style={styles.ctaRow}>
@@ -122,7 +122,9 @@ export default function AboutAppScreen() {
           </View>
         </Section>
 
-        <Text style={styles.footer}>© {new Date().getFullYear()} SpotShot</Text>
+        <Text style={styles.footer}>
+          © {new Date().getFullYear()} PhotoSpots
+        </Text>
       </ScrollView>
     </View>
   );

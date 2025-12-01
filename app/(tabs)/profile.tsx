@@ -159,7 +159,7 @@ export default function Profile() {
                   color={Theme.colors.primary}
                 />
               </View>
-              <Text style={styles.settingText}>About SpotShot</Text>
+              <Text style={styles.settingText}>About PhotoSpots</Text>
               <MaterialIcons
                 name="chevron-right"
                 size={24}

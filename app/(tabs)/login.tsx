@@ -1,8 +1,9 @@
 import SignInForm from "@/components/ui/SignInForm";
 import SignUpForm from "@/components/ui/SignUpForm";
 import { Theme } from "@/constants/Theme";
+import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Keyboard,
@@ -15,7 +16,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function AuthScreen() {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -56,7 +56,9 @@ export default function AuthScreen() {
 
         {/* Decorative elements */}
         <View style={styles.decorativeCircle} />
-        <View style={[styles.decorativeCircle, styles.decorativeCircleBottom]} />
+        <View
+          style={[styles.decorativeCircle, styles.decorativeCircleBottom]}
+        />
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -84,7 +86,7 @@ export default function AuthScreen() {
                   </View>
                 </View>
 
-                <Text style={styles.appName}>SpotShot</Text>
+                <Text style={styles.appName}>PhotoSpots</Text>
                 <Text style={styles.tagline}>
                   Discover the world's most{"\n"}photogenic locations
                 </Text>
@@ -195,7 +197,8 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.body,
     color: Theme.colors.textMuted,
     textAlign: "center",
-    lineHeight: Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
+    lineHeight:
+      Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
     marginBottom: Theme.spacing.xl,
   },
   divider: {
