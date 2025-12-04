@@ -7,6 +7,7 @@ import { Stack, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -237,7 +238,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    bottom: 120,
+    bottom: Platform.select({
+      ios: 120,
+      android: 40,
+    }),
     left: Theme.spacing.md,
     right: Theme.spacing.md,
   },

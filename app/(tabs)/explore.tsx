@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Animated,
   Modal,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -39,7 +40,12 @@ export default function ExploreScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + 24 }]}>
+    <View style={[styles.container, {
+      paddingBottom: Platform.select({
+        ios: insets.bottom + 24,
+        android: 0,
+      })
+    }]}>
       <Stack.Screen
         options={{
           headerTitle: () => <HeaderLogo title="Explore Spots" />,
