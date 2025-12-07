@@ -48,6 +48,8 @@ export default function SpotDetailScreen() {
     }).start();
   }, []);
 
+  const isOwner = spot && userId && spot.author_id === userId;
+
   if (loading) {
     return (
       <ScrollView
@@ -119,6 +121,27 @@ export default function SpotDetailScreen() {
           headerBackTitle: "Spots",
           headerStyle: { backgroundColor: Theme.colors.richBlack },
           headerTintColor: Theme.colors.offWhite,
+          headerRight: () =>
+            isOwner ? (
+              <TouchableOpacity
+                onPress={() => router.push(`/edit-spot/${id}`)}
+                style={{ marginRight: 4 }}
+              >
+                <MaterialIcons
+                  name="edit"
+                  size={24}
+                  color={Theme.colors.primary}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => setReportOpen(true)}>
+                <MaterialIcons
+                  name="report-gmailerrorred"
+                  size={26}
+                  color={Theme.colors.error}
+                />
+              </TouchableOpacity>
+            ),
         }}
       />
 
@@ -289,11 +312,13 @@ export default function SpotDetailScreen() {
           </TouchableOpacity>
         </View>
       </Animated.View>
-      <ReportModal
-        visible={reportOpen}
-        onClose={() => !submitting && setReportOpen(false)}
-        onPick={onReportPick}
-      />
+      {!isOwner && (
+        <ReportModal
+          visible={reportOpen}
+          onClose={() => !submitting && setReportOpen(false)}
+          onPick={onReportPick}
+        />
+      )}
     </ScrollView>
   );
 }

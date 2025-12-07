@@ -44,3 +44,13 @@ export const getUserSpotsCount = async (userId: string): Promise<number> => {
   const response = await axios.get(`${BASE_URL}/api/spots/count/${userId}`);
   return response.data.count;
 };
+
+export const getUserSpots = async (userId: string) => {
+  const response = await axios.get(`${BASE_URL}/api/spots/user/${userId}`);
+  return response.data;
+};
+
+export const updateSpot = async (id: string, data: any) => {
+  const response = await axios.put(`${BASE_URL}/api/spots/spot/${id}`, data);
+  return response.data;
+};

@@ -144,10 +144,7 @@ export default function Onboarding() {
           {SLIDES.map((_, i) => (
             <Animated.View
               key={i}
-              style={[
-                styles.dot,
-                i === index && styles.dotActive,
-              ]}
+              style={[styles.dot, i === index && styles.dotActive]}
             />
           ))}
         </View>
@@ -314,7 +311,8 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.body,
     color: Theme.colors.textMuted,
     textAlign: "center",
-    lineHeight: Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
+    lineHeight:
+      Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
     paddingHorizontal: Theme.spacing.md,
     fontWeight: Theme.typography.weights.medium,
   },

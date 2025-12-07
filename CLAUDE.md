@@ -58,7 +58,12 @@ spotshot/
 │   │   ├── profile.tsx           # User profile & stats
 │   │   └── login.tsx             # Authentication screen
 │   ├── spot/                     # Spot detail pages
+│   │   └── [id].tsx              # Dynamic spot detail screen
 │   ├── add-spot/                 # Multi-step add spot flow
+│   │   └── add-spot-form.tsx     # Add spot form screen
+│   ├── edit-spot/                # Edit spot flow
+│   │   └── [id].tsx              # Edit spot form screen
+│   ├── user-spots.tsx            # User's created spots list
 │   ├── _layout.tsx               # Root layout with providers
 │   ├── index.tsx                 # App entry point
 │   └── about.tsx                 # About page
@@ -80,6 +85,8 @@ spotshot/
 │   ├── useSpot.ts                # Fetch single spot
 │   ├── useFavourites.ts          # Favourites state
 │   ├── useAddSpot.ts             # Add spot logic
+│   ├── useEditSpot.ts            # Edit spot logic
+│   ├── useUserSpots.ts           # Fetch user's created spots
 │   ├── useUserStats.ts           # User statistics
 │   └── useColorScheme.ts         # Theme management
 ├── provider/                     # React Context providers
@@ -235,7 +242,93 @@ await createSpot({
 
 **Content Moderation**: New spots have `accepted: false` until reviewed by moderators.
 
-### 6. Favourites System
+### 6. Edit Spot
+
+**Location**: `app/edit-spot/[id].tsx`, `hooks/useEditSpot.ts`
+
+**Features**:
+- Edit spots created by the logged-in user
+- Pre-filled form with existing spot data
+- Optional image replacement (keeps existing if not changed)
+- Location shown as read-only (cannot be changed)
+- Authorization check (only spot author can edit)
+- Re-moderation after edit (`accepted: false`)
+
+**Technical Flow**:
+```typescript
+// 1. Fetch existing spot data
+const { spot } = useSpot(id);
+
+// 2. Pre-fill form with existing data
+reset({
+  name: spot.name,
+  description: spot.description,
+  photo_tips: spot.photo_tips,
+  country: spot.country,
+  city: spot.city,
+});
+
+// 3. Optional image upload
+if (photo) {
+  imageUrl = await uploadToCloudinary(compressedImage);
+} else {
+  imageUrl = spot.image; // Keep existing
+}
+
+// 4. Update spot with authorization
+await updateSpot(spotId, {
+  ...formData,
+  image: imageUrl,
+  user_id: userId, // Required for auth check
+});
+```
+
+**Authorization**:
+- Frontend: Edit button only shown to spot owner (`spot.author_id === userId`)
+- Backend: Validates user_id matches spot.author_id (403 if unauthorized)
+- Protected fields cannot be changed (latitude, longitude, author_id)
+
+**UI Features**:
+- Edit icon in spot detail header (pencil icon) for owners
+- Report icon for non-owners
+- Pre-filled form fields
+- Current photo preview with optional change
+- Read-only map showing location
+- Success message: "Spot updated! It will be reviewed by moderators before appearing publicly."
+
+### 7. User Spots
+
+**Location**: `app/user-spots.tsx`, `hooks/useUserSpots.ts`
+
+**Features**:
+- View all spots created by the logged-in user
+- Accessible from profile page "Spots Added" stat card
+- Grid layout matching saved spots UI
+- Empty state with "Add your first spot" CTA
+- Loading state with activity indicator
+
+**Technical Flow**:
+```typescript
+// 1. Fetch user's spots
+const { spots, loading, isEmpty } = useUserSpots(userId);
+
+// 2. Display in grid
+<SpotGrid spots={spots} />
+
+// 3. Navigate to spot detail on tap
+```
+
+**API Endpoint**:
+- `GET /api/spots/user/:userId` - Returns all spots by author_id
+- Ordered by creation date (newest first)
+- Includes pending (not accepted) spots
+
+**Navigation**:
+- Tap "Spots Added" card in profile → navigates to `/user-spots`
+- Stat card is clickable with visual feedback
+- Back button returns to profile
+
+### 8. Favourites System
 
 **Location**: `hooks/useFavourites.ts`, `lib/api/favourites.ts`
 
@@ -322,9 +415,11 @@ The app communicates with a custom backend server via REST API:
 - `GET /api/spots` - Fetch all spots (with optional filters)
 - `GET /api/spots/spot/:id` - Fetch single spot
 - `POST /api/spots` - Create new spot
+- `PUT /api/spots/spot/:id` - Update existing spot (with authorization)
 - `GET /api/spots/countries` - Get unique countries
 - `GET /api/spots/cities?country=X` - Get cities in country
 - `GET /api/spots/count/:userId` - Get user's spot count
+- `GET /api/spots/user/:userId` - Get all spots created by user
 
 ### Favourites Endpoints
 - `POST /api/favourites` - Add to favourites
@@ -486,8 +581,14 @@ Based on the README and codebase analysis:
 - `lib/api/spots.ts:5` - `getSpots` with filters
 - `lib/api/spots.ts:21` - `getSpotById`
 - `lib/api/spots.ts:26` - `createSpot`
+- `lib/api/spots.ts:53` - `updateSpot` with authorization
+- `lib/api/spots.ts:48` - `getUserSpots` by author
 - `hooks/useSpots.ts` - Spots data hook
 - `hooks/useAddSpot.ts` - Add spot hook
+- `hooks/useEditSpot.ts` - Edit spot hook
+- `hooks/useUserSpots.ts` - User's created spots hook
+- `app/edit-spot/[id].tsx` - Edit spot screen
+- `app/user-spots.tsx` - User spots list screen
 
 ### Favourites
 - `lib/api/favourites.ts:7` - `addToFavourites`

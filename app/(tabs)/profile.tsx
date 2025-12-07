@@ -109,7 +109,11 @@ export default function Profile() {
 
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={() => router.push("/user-spots")}
+            disabled={anyLoading}
+          >
             <View style={styles.statIconContainer}>
               <MaterialIcons
                 name="add-location"
@@ -123,7 +127,7 @@ export default function Profile() {
               <Text style={styles.statNumber}>{userSpotsCount}</Text>
             )}
             <Text style={styles.statLabel}>Spots Added</Text>
-          </View>
+          </TouchableOpacity>
 
           <View style={styles.statCard}>
             <View style={styles.statIconContainer}>
