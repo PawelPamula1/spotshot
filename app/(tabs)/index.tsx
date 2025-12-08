@@ -8,6 +8,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -90,39 +91,49 @@ export default function SpotsScreen() {
             pinColor="#6D5FFD"
             coordinate={{ latitude: spot.latitude, longitude: spot.longitude }}
             title={spot.name}
+            onPress={
+              Platform.OS === "android"
+                ? () =>
+                    isAuthenticated
+                      ? router.push(`/spot/${spot.id}`)
+                      : router.push("/(tabs)/login")
+                : undefined
+            }
           >
-            <Callout
-              tooltip
-              onPress={() =>
-                isAuthenticated
-                  ? router.push(`/spot/${spot.id}`)
-                  : router.push("/(tabs)/login")
-              }
-            >
-              <View style={styles.callout}>
-                {/* Film border for callout */}
-                <View style={styles.filmBorder}>
-                  <View style={styles.cornerMarker} />
-                  <View style={[styles.cornerMarker, styles.cornerTopRight]} />
+            {Platform.OS === "ios" && (
+              <Callout
+                tooltip
+                onPress={() =>
+                  isAuthenticated
+                    ? router.push(`/spot/${spot.id}`)
+                    : router.push("/(tabs)/login")
+                }
+              >
+                <View style={styles.callout}>
+                  {/* Film border for callout */}
+                  <View style={styles.filmBorder}>
+                    <View style={styles.cornerMarker} />
+                    <View style={[styles.cornerMarker, styles.cornerTopRight]} />
 
-                  <Image
-                    source={{ uri: spot.image }}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                </View>
-
-                <View style={styles.textContainer}>
-                  <View style={styles.locationBadge}>
-                    <Text style={styles.city}>{spot.city}</Text>
+                    <Image
+                      source={{ uri: spot.image }}
+                      style={styles.image}
+                      contentFit="cover"
+                    />
                   </View>
-                  <Text style={styles.name} numberOfLines={2}>
-                    {spot.name}
-                  </Text>
-                  <View style={styles.accentLine} />
+
+                  <View style={styles.textContainer}>
+                    <View style={styles.locationBadge}>
+                      <Text style={styles.city}>{spot.city}</Text>
+                    </View>
+                    <Text style={styles.name} numberOfLines={2}>
+                      {spot.name}
+                    </Text>
+                    <View style={styles.accentLine} />
+                  </View>
                 </View>
-              </View>
-            </Callout>
+              </Callout>
+            )}
           </Marker>
         ))}
       </MapView>
