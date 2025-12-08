@@ -19,6 +19,10 @@
     "production": {
       "ios": {
         "ascAppId": "6753591460"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./photospots-service-key.json",
+        "track": "internal"
       }
     }
   }
