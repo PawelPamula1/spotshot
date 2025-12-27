@@ -20,10 +20,7 @@
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/ios-dark.png",
-        "backgroundColor": "#2c3e5a"
-      },
+      "icon": "./assets/icons/ios-dark.png",
       "edgeToEdgeEnabled": true,
       "package": "com.sancus.spotshot",
       "config": {
