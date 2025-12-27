@@ -6,6 +6,7 @@ import { Stack } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -81,14 +82,16 @@ export default function AuthScreen() {
               {/* Hero Section */}
               <View style={styles.hero}>
                 <View style={styles.logoContainer}>
-                  <View style={styles.logoFrame}>
-                    <Text style={styles.logoIcon}>📸</Text>
-                  </View>
+                  <Image
+                    source={require("@/assets/icons/ios-dark.png")}
+                    style={styles.logoImage}
+                    resizeMode="contain"
+                  />
                 </View>
 
                 <Text style={styles.appName}>PhotoSpots</Text>
                 <Text style={styles.tagline}>
-                  Discover the world's most{"\n"}photogenic locations
+                  Discover the world's most photogenic locations
                 </Text>
 
                 <View style={styles.divider}>
@@ -160,52 +163,40 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
-    paddingVertical: Theme.spacing.xxxl,
+    paddingVertical: Theme.spacing.lg,
   },
   inner: {
     paddingHorizontal: Theme.spacing.lg,
   },
   hero: {
     alignItems: "center",
-    marginBottom: Theme.spacing.xl,
+    marginBottom: Theme.spacing.md,
   },
   logoContainer: {
-    marginBottom: Theme.spacing.lg,
+    marginBottom: Theme.spacing.sm,
   },
-  logoFrame: {
-    width: 80,
-    height: 80,
-    borderRadius: Theme.radius.md,
-    backgroundColor: Theme.colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    ...Theme.shadows.medium,
-    borderWidth: 3,
-    borderColor: Theme.colors.primaryLight,
-  },
-  logoIcon: {
-    fontSize: 40,
+  logoImage: {
+    width: 60,
+    height: 60,
   },
   appName: {
-    fontSize: Theme.typography.sizes.hero,
+    fontSize: Theme.typography.sizes.h2,
     fontWeight: Theme.typography.weights.black,
     color: Theme.colors.offWhite,
-    marginBottom: Theme.spacing.sm,
-    letterSpacing: -1,
+    marginBottom: Theme.spacing.xs,
+    letterSpacing: -0.5,
   },
   tagline: {
-    fontSize: Theme.typography.sizes.body,
+    fontSize: Theme.typography.sizes.bodySmall,
     color: Theme.colors.textMuted,
     textAlign: "center",
-    lineHeight:
-      Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
-    marginBottom: Theme.spacing.xl,
+    marginBottom: Theme.spacing.sm,
   },
   divider: {
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    marginVertical: Theme.spacing.lg,
+    marginVertical: Theme.spacing.sm,
   },
   dividerLine: {
     flex: 1,
@@ -220,13 +211,13 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   formContainer: {
-    gap: Theme.spacing.lg,
+    gap: Theme.spacing.md,
   },
   toggleButton: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm,
   },
   toggleText: {
     fontSize: Theme.typography.sizes.bodySmall,

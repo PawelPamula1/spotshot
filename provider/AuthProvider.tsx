@@ -163,6 +163,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (Object.keys(fieldErrors).length) {
       setLastError("Validation failed");
+      setIsSigningUp(false);
       return { ok: false, error: "Validation failed", fieldErrors };
     }
 

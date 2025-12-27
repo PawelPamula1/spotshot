@@ -208,17 +208,17 @@ export default function SignUpForm({
 
 const styles = StyleSheet.create({
   container: {
-    gap: Theme.spacing.lg,
+    gap: Theme.spacing.md,
   },
   inputGroup: {
-    gap: Theme.spacing.sm,
+    gap: Theme.spacing.xs,
   },
   label: {
     fontSize: Theme.typography.sizes.bodySmall,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.offWhite,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
   inputWrapper: {
     backgroundColor: Theme.colors.darkNavy,
@@ -232,15 +232,16 @@ const styles = StyleSheet.create({
     ...Theme.shadows.soft,
   },
   input: {
-    padding: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm + 2,
+    paddingHorizontal: Theme.spacing.sm,
     color: Theme.colors.textLight,
     fontSize: Theme.typography.sizes.body,
   },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: Theme.spacing.sm,
-    paddingVertical: Theme.spacing.xs,
+    gap: Theme.spacing.xs,
+    paddingVertical: 0,
   },
   checkboxBox: {
     width: 20,
@@ -270,12 +271,12 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Theme.colors.primary,
-    paddingVertical: Theme.spacing.md + 2,
-    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.sm + 4,
+    paddingHorizontal: Theme.spacing.md,
     borderRadius: Theme.radius.md,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: Theme.spacing.sm,
+    marginTop: Theme.spacing.xs,
     ...Theme.shadows.medium,
     position: "relative",
     overflow: "hidden",
@@ -284,11 +285,11 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    fontSize: Theme.typography.sizes.body,
+    fontSize: Theme.typography.sizes.bodySmall,
     fontWeight: Theme.typography.weights.bold,
     color: Theme.colors.offWhite,
     textTransform: "uppercase",
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
   },
   buttonAccent: {
     position: "absolute",

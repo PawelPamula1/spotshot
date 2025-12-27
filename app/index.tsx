@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -62,6 +63,7 @@ const SLIDES: Slide[] = [
 
 export default function Onboarding() {
   const { isAuthenticated } = useAuth();
+  const insets = useSafeAreaInsets();
 
   if (isAuthenticated) {
     return <Redirect href="/(tabs)" />;
@@ -122,7 +124,7 @@ export default function Onboarding() {
       <View style={[styles.decorativeCircle, styles.decorativeCircleBottom]} />
 
       <Animated.View style={[styles.contentContainer, { opacity: fadeAnim }]}>
-        <View style={styles.topBar}>
+        <View style={[styles.topBar, { top: insets.top + 20 }]}>
           <TouchableOpacity onPress={goToApp} style={styles.skipButton}>
             <Text style={styles.skip}>Skip</Text>
           </TouchableOpacity>
@@ -149,14 +151,21 @@ export default function Onboarding() {
           ))}
         </View>
 
-        <View style={styles.buttons}>
+        <View
+          style={[
+            styles.buttons,
+            { paddingBottom: insets.bottom + Theme.spacing.xl },
+          ]}
+        >
           <Link href="/(tabs)/login" asChild>
             <TouchableOpacity style={styles.secondaryButton}>
               <Text style={styles.secondaryButtonText}>Log In</Text>
             </TouchableOpacity>
           </Link>
 
-          <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+          <Animated.View
+            style={{ transform: [{ scale: buttonScale }], flex: 1 }}
+          >
             <TouchableOpacity
               onPress={handleNext}
               onPressIn={handlePressIn}
@@ -251,7 +260,6 @@ const styles = StyleSheet.create({
   },
   topBar: {
     position: "absolute",
-    top: 60,
     right: Theme.spacing.lg,
     zIndex: 10,
   },
@@ -268,15 +276,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: Theme.spacing.lg,
+    paddingTop: 80,
   },
   imageContainer: {
     position: "relative",
-    marginBottom: Theme.spacing.xl,
+    marginBottom: Theme.spacing.md,
   },
   image: {
-    width: width * 0.85,
-    height: width * 1.0,
+    width: width * 0.8,
+    height: width * 0.95,
     marginBottom: Theme.spacing.md,
+    zIndex: 1,
   },
   imageGlow: {
     position: "absolute",
@@ -294,25 +304,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.md,
   },
   title: {
-    fontSize: Theme.typography.sizes.h2,
+    fontSize: Theme.typography.sizes.h3,
     color: Theme.colors.offWhite,
     fontWeight: Theme.typography.weights.black,
     textAlign: "center",
-    marginBottom: Theme.spacing.sm,
+    marginBottom: Theme.spacing.xs,
   },
   titleUnderline: {
     width: 60,
     height: 4,
     backgroundColor: Theme.colors.primary,
     borderRadius: 2,
-    marginBottom: Theme.spacing.md,
+    marginBottom: Theme.spacing.sm,
   },
   subtitle: {
-    fontSize: Theme.typography.sizes.body,
+    fontSize: Theme.typography.sizes.bodySmall,
     color: Theme.colors.textMuted,
     textAlign: "center",
     lineHeight:
-      Theme.typography.sizes.body * Theme.typography.lineHeights.relaxed,
+      Theme.typography.sizes.bodySmall * Theme.typography.lineHeights.relaxed,
     paddingHorizontal: Theme.spacing.md,
     fontWeight: Theme.typography.weights.medium,
   },
@@ -320,7 +330,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     gap: Theme.spacing.sm,
-    marginBottom: Theme.spacing.lg,
+    marginBottom: Theme.spacing.md,
   },
   dot: {
     width: 8,
@@ -334,8 +344,8 @@ const styles = StyleSheet.create({
   },
   buttons: {
     paddingHorizontal: Theme.spacing.lg,
-    paddingBottom: Theme.spacing.xxxl,
     gap: Theme.spacing.md,
+    flexDirection: "row",
   },
   primaryButton: {
     paddingVertical: Theme.spacing.md + 2,
@@ -346,10 +356,10 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: Theme.colors.offWhite,
-    fontSize: Theme.typography.sizes.body,
+    fontSize: Theme.typography.sizes.bodySmall,
     fontWeight: Theme.typography.weights.bold,
     textTransform: "uppercase",
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
   },
   secondaryButton: {
     backgroundColor: Theme.colors.deepCharcoal,
@@ -358,10 +368,11 @@ const styles = StyleSheet.create({
     paddingVertical: Theme.spacing.md,
     borderRadius: Theme.radius.lg,
     alignItems: "center",
+    flex: 1,
   },
   secondaryButtonText: {
     color: Theme.colors.offWhite,
-    fontSize: Theme.typography.sizes.body,
+    fontSize: Theme.typography.sizes.bodySmall,
     fontWeight: Theme.typography.weights.semibold,
   },
 });

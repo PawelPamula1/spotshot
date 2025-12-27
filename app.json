@@ -2,7 +2,7 @@
   "expo": {
     "name": "PhotoSpots",
     "slug": "spotshot",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icons/ios-dark.png",
     "scheme": "spotshot",
@@ -21,8 +21,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/icons/ios-dark.png",
+        "backgroundColor": "#2c3e5a"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.sancus.spotshot",
